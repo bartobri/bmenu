@@ -9,3 +9,6 @@ $(ODIR)/%.o: %.c
 
 bmenu: $(OBJ)
 	$(CC) -o $@ $^
+
+clean:
+	rm -f $(ODIR)/*.o bmenu
