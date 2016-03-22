@@ -9,7 +9,7 @@
 #include <termios.h>         // Support for character input
 #include <unistd.h>          // Support for character input
 
-#define MENU_CONFIG	         ".bmenu"
+#define MENU_CONFIG          ".bmenu"
 
 #define MAX_MENU_OPTIONS     10
 #define MAX_MENU_CHAR        50
