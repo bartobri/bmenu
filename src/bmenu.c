@@ -1,3 +1,7 @@
+// Copyright (c) 2016 Brian Barto
+// Distributed under the MIT software license, see the accompanying
+// file COPYING or https://opensource.org/licenses/MIT
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>			// getenv()
