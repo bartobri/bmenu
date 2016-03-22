@@ -78,9 +78,9 @@ int main (void) {
 
 	// Setting terminal input mode to turn off echo and buffering
 	static struct termios oldt, newt;
-	tcgetattr( STDIN_FILENO, &oldt);			// get terminal parameters, store in oldt
+	tcgetattr( STDIN_FILENO, &oldt);            // get terminal parameters, store in oldt
 	newt = oldt;                                // copy settings to newt
-	newt.c_lflag &= ~(ICANON | ECHO);			// unset ICANON and ECHO
+	newt.c_lflag &= ~(ICANON | ECHO);           // unset ICANON and ECHO
 	tcsetattr( STDIN_FILENO, TCSANOW, &newt);   // run new terminal settings
 
 	// Menu loop
