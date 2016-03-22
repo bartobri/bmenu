@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>			// getenv()
-#include <sys/ioctl.h>      // Support for terminal dimentions
+#include <sys/ioctl.h>		// Support for terminal dimentions
 #include <termios.h>		// Support for character input
 #include <unistd.h>			// Support for character input
 
@@ -38,7 +38,7 @@ int main (void) {
 	// Get terminal size
 	int wRows, wCols;
 	struct winsize w;                                                                                         
-    ioctl(0, TIOCGWINSZ, &w);
+	ioctl(0, TIOCGWINSZ, &w);
 	wRows =  w.ws_row;
 	wCols = w.ws_col;
 
@@ -132,10 +132,10 @@ int main (void) {
 
 	// Setting terminal input mode to turn off echo and buffering
 	static struct termios oldt, newt;
-    tcgetattr( STDIN_FILENO, &oldt);						// get terminal parameters, store in oldt
-    newt = oldt;											// copy settings to newt
-    newt.c_lflag &= ~(ICANON | ECHO);						// unset ICANON and ECHO
-    tcsetattr( STDIN_FILENO, TCSANOW, &newt);				// run new terminal settings
+	tcgetattr( STDIN_FILENO, &oldt);						// get terminal parameters, store in oldt
+	newt = oldt;											// copy settings to newt
+	newt.c_lflag &= ~(ICANON | ECHO);						// unset ICANON and ECHO
+	tcsetattr( STDIN_FILENO, TCSANOW, &newt);				// run new terminal settings
 
 	// Menu loop
 	int menuCurOption = 1;
@@ -168,7 +168,7 @@ int main (void) {
 	} while ((input = getchar()) != ENTER);
 
 	// Restore terminal settings before exiting
-    tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
+	tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
 
 	// Execute chosen command
 	// TODO - handle command switches
