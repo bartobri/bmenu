@@ -4,10 +4,10 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>			// getenv()
-#include <sys/ioctl.h>		// Support for terminal dimentions
-#include <termios.h>		// Support for character input
-#include <unistd.h>			// Support for character input
+#include <stdlib.h>     // getenv()
+#include <sys/ioctl.h>  // Support for terminal dimentions
+#include <termios.h>    // Support for character input
+#include <unistd.h>     // Support for character input
 
 #define MENU_CONFIG		".bmenu"
 
@@ -33,9 +33,9 @@ char menu[MAX_MENU_OPTIONS][MAX_MENU_CHAR];
 char command[MAX_MENU_OPTIONS][MAX_COMMAND_CHAR];
 int menuRows = 0, menuCols = 0;
 
-///////////////////////////////
-// Main function
-///////////////////////////////
+/*
+ * Main function
+ */
 int main (void) {
 	int loadMenuConfig(void);
 
@@ -116,30 +116,46 @@ int main (void) {
 		window[borderStartRow - 1][borderStartCol + 12] = 'n';
 		for (int i1 = borderStartRow; i1 <= borderEndRow; ++i1)
 			for (int i2 = borderStartCol; i2 <= borderEndCol; ++i2)
+
+				// Upper left corner
 				if (i1 == borderStartRow && i2 == borderStartCol)
-					window[i1][i2] = '=';					// Upper left corner
+					window[i1][i2] = '=';
+
+				// Upper right corner
 				else if (i1 == borderStartRow && i2 == borderEndCol)
-					window[i1][i2] = '=';					// Upper right corner
+					window[i1][i2] = '=';
+
+				// Lower left corner
 				else if (i1 == borderEndRow && i2 == borderStartCol)
-					window[i1][i2] = '=';					// Lower left corner
+					window[i1][i2] = '=';
+
+				// Lower right corner
 				else if (i1 == borderEndRow && i2 == borderEndCol)
-					window[i1][i2] = '=';					// Lower right corner
+					window[i1][i2] = '=';
+
+				// Top row
 				else if (i1 == borderStartRow)
-					window[i1][i2] = '=';					// Top row
+					window[i1][i2] = '=';
+
+				// Bottom row
 				else if (i1 == borderEndRow)
-					window[i1][i2] = '=';					// Bottom row
+					window[i1][i2] = '=';
+
+				// Left edge
 				else if (i2 == borderStartCol)
-					window[i1][i2] = '|';					// Left edge
+					window[i1][i2] = '|';
+
+				// Right edge
 				else if (i2 == borderEndCol)
-					window[i1][i2] = '|';					// Right edge
+					window[i1][i2] = '|';
 	}
 
 	// Setting terminal input mode to turn off echo and buffering
 	static struct termios oldt, newt;
-	tcgetattr( STDIN_FILENO, &oldt);						// get terminal parameters, store in oldt
-	newt = oldt;											// copy settings to newt
-	newt.c_lflag &= ~(ICANON | ECHO);						// unset ICANON and ECHO
-	tcsetattr( STDIN_FILENO, TCSANOW, &newt);				// run new terminal settings
+	tcgetattr( STDIN_FILENO, &oldt);			// get terminal parameters, store in oldt
+	newt = oldt;                                // copy settings to newt
+	newt.c_lflag &= ~(ICANON | ECHO);			// unset ICANON and ECHO
+	tcsetattr( STDIN_FILENO, TCSANOW, &newt);   // run new terminal settings
 
 	// Menu loop
 	int menuCurOption = 1;
@@ -158,7 +174,10 @@ int main (void) {
 		// printing window
 		for (int c1 = 0; c1 < wRows; ++c1)
 			for (int c2 = 0; c2 < wCols; ++c2) {
-				printf("\033[%i;%iH", c1, c2);				// Set cursor position
+
+				// Set cursor position
+				printf("\033[%i;%iH", c1, c2);
+
 				if (c1 == startRow + (menuCurOption - 1) && c2 > startCol - 1 && c2 < startCol + menuCols) {
 					printf(KMAG "%c", window[c1][c2]);
 					if (c2 == startCol) {
@@ -181,10 +200,10 @@ int main (void) {
 	return 0;
 }
 
-///////////////////////////////////////////////////
-// loadMenuConfig() - Loading the menu config file.
-// Return a non-zero result if anything goes wrong.
-///////////////////////////////////////////////////
+/*
+ * loadMenuConfig() - Loading the menu config file.
+ * Return a non-zero result if anything goes wrong.
+ */
 int loadMenuConfig(void) {
 	char *homeDir = getenv("HOME");;
 
