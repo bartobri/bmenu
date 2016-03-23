@@ -30,12 +30,10 @@
 #define KCYN                 "\x1B[36m"
 #define KWHT                 "\x1B[37m"
 
-// Making menu vars global
+// Global Vars
+int windowRows, windowCols;
 char menu[MAX_MENU_OPTIONS][MAX_MENU_CHAR];
 char command[MAX_MENU_OPTIONS][MAX_COMMAND_CHAR];
-
-// Making window dimentions global
-int windowRows, windowCols;
 
 // Function prototypes
 int getMenuRows(void);
