@@ -44,8 +44,8 @@ int windowRows, windowCols;
  ***************************/
 int main (void) {
 	int loadMenuConfig(void);
-	void printWindowHeader(void);
-	void printMenuBorder(void);
+	void windowHeader(void);
+	void decorateMenu(void);
 	void printMenu(int);
 
 	// Getting menu config
@@ -76,11 +76,11 @@ int main (void) {
 		printf("%c", NEWLINE);
 	}
 
-	// Outer header
-	printWindowHeader();
+	// Print window header
+	windowHeader();
 
-	// Menu Border and Title
-	printMenuBorder();
+	// Menu title, borders, and select/exit options
+	decorateMenu();
 
 	// Setting terminal input mode to turn off echo and buffering
 	static struct termios oldt, newt;
@@ -200,7 +200,7 @@ int loadMenuConfig(void) {
 	return 0;
 }
 
-void printWindowHeader(void) {
+void windowHeader(void) {
 	int textRow = 1;
 	int barRow = 2;
 	int barChar = '=';
@@ -211,14 +211,14 @@ void printWindowHeader(void) {
 		printf("\033[%i;%iH%c", barRow, col, barChar);
 }
 
-void printMenuBorder() {
-	int startRow, startCol;
-	int colPadding = 4;
-	int rowPadding = 2;
-	int borderCols = menuCols + (colPadding * 2);
-	int borderRows = menuRows + (rowPadding * 2);
+void decorateMenu() {
+	int borderCols, borderRows, startRow, startCol;
 
-	// Determining starting row and column for menu
+	// Border size (inner)
+	borderCols = menuCols + 8;
+	borderRows = menuRows + 4;
+
+	// Determining starting row and column for border (inner)
 	startCol = ((windowCols / 2) - (borderCols / 2));
 	startRow = ((windowRows / 2) - (borderRows / 2));
 	if (startCol < 0)
@@ -226,9 +226,9 @@ void printMenuBorder() {
 	if (startRow < 0)
 		startRow = 0;
 
-	// Inserting menu in to terminal window
+	// printing border (inner)
 	for (int row = 0; row < borderRows; ++row)
-		for (int col = 0; col < borderCols; ++col) {
+		for (int col = 0; col < borderCols; ++col)
 			if (row == 0)
 				printf("\033[%i;%iH%c", row + startRow, col + startCol, '=');
 			else if (row == borderRows - 1)
@@ -237,7 +237,37 @@ void printMenuBorder() {
 				printf("\033[%i;%iH%c", row + startRow, col + startCol, '|');
 			else if (col == borderCols - 1)
 				printf("\033[%i;%iH%c", row + startRow, col + startCol, '|');
-		}
+
+	// Printing (inner) border title
+	printf("\033[%i;%iH%s", startRow - 1, startCol, "Select Option");
+
+	// Border size (outer)
+	borderCols = menuCols + 12;
+	borderRows = menuRows + 8;
+
+	// Determining starting row and column for border (outer)
+	startCol = ((windowCols / 2) - (borderCols / 2));
+	startRow = ((windowRows / 2) - (borderRows / 2));
+	if (startCol < 0)
+		startCol = 0;
+	if (startRow < 0)
+		startRow = 0;
+
+	// Add to the bottom of the border (outer) for select/exit options
+	borderRows += 2;
+
+	// printing border (outer)
+	for (int row = 0; row < borderRows; ++row)
+		for (int col = 0; col < borderCols; ++col)
+			if (row == 0)
+				printf("\033[%i;%iH%c", row + startRow, col + startCol, '=');
+			else if (row == borderRows - 1)
+				printf("\033[%i;%iH%c", row + startRow, col + startCol, '=');
+			else if (col == 0)
+				printf("\033[%i;%iH%c", row + startRow, col + startCol, '|');
+			else if (col == borderCols - 1)
+				printf("\033[%i;%iH%c", row + startRow, col + startCol, '|');
+	
 }
 
 void printMenu(int o) {
