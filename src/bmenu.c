@@ -98,9 +98,9 @@ int main (void) {
 			input = getchar();
 			input = getchar();
 			if (input == 65 && menuCurOption > 1)
-					--menuCurOption;
+				--menuCurOption;
 			else if (input == 66 && menuCurOption < menuRows)
-					++menuCurOption;
+				++menuCurOption;
 		}
 
 		// Print menu with the current selection highlighted
