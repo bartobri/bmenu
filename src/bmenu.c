@@ -203,10 +203,7 @@ void printMenu(int o) {
 
 	// Inserting menu in to terminal window
 	for (int row = 0; row < menuRows; ++row) {
-		if (row == o - 1)
-			printf(KMAG);
-		else
-			printf(KNRM);
+		printf( (row == o - 1) ? KMAG : KNRM );
 		for (int col = 0; menu[row][col] != '\0'; ++col)
 			printf("\033[%i;%iH%c", row + startRow, col + startCol, menu[row][col]);
 	}
