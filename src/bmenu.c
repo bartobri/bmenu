@@ -9,6 +9,8 @@
 #include <termios.h>         // Support for character input
 #include <unistd.h>          // Support for character input
 
+#define VERSION              "0.10"
+
 #define MENU_CONFIG          ".bmenu"
 
 #define MAX_MENU_OPTIONS     10
@@ -203,7 +205,7 @@ void printHeader(void) {
 	int barRow = 2;
 	int barChar = '=';
 
-	printf("\033[%i;%iH%s", textRow, 2, "B-MENU");
+	printf("\033[%i;%iH%s", textRow, 2, "B-MENU v" VERSION);
 
 	for (int col = 0; col < windowCols; ++col)
 		printf("\033[%i;%iH%c", barRow, col, barChar);
