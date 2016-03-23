@@ -46,7 +46,7 @@ int main (void) {
 	int loadMenuConfig(void);
 	void windowHeader(void);
 	void decorateMenu(void);
-	void printMenu(int);
+	void printMenu(int, int);
 
 	// Getting menu config
 	// TODO - see if I can remove the use of globals in loadMenuConfig()
@@ -90,21 +90,25 @@ int main (void) {
 	tcsetattr( STDIN_FILENO, TCSANOW, &newt);   // run new terminal settings
 
 	// Menu loop
-	int menuCurOption = 1;
+	int menuListOption = 1, menuFootOption = 1;
 	int input = 0;
 	do {
 		// Check input
 		if (input == 27) {
 			input = getchar();
 			input = getchar();
-			if (input == 65 && menuCurOption > 1)
-				--menuCurOption;
-			else if (input == 66 && menuCurOption < menuRows)
-				++menuCurOption;
+			if (input == 65 && menuListOption > 1)
+				--menuListOption;
+			else if (input == 66 && menuListOption < menuRows)
+				++menuListOption;
+			else if (input == 68)
+				menuFootOption = 1;
+			else if (input == 67)
+				menuFootOption = 2;
 		}
 
 		// Print menu with the current selection highlighted
-		printMenu(menuCurOption);
+		printMenu(menuListOption, menuFootOption);
 
 		// Position cursor at the bottom of the terminal window
 		printf("\033[%i;%iH", windowRows, 1);
@@ -116,7 +120,8 @@ int main (void) {
 
 	// Execute chosen command
 	// TODO - handle command switches
-	execl(command[menuCurOption - 1], command[menuCurOption - 1], 0);
+	if (menuFootOption == 1)
+		execl(command[menuListOption - 1], command[menuListOption - 1], 0);
 
 	return 0;
 }
@@ -218,6 +223,11 @@ void decorateMenu() {
 	borderCols = menuCols + 8;
 	borderRows = menuRows + 4;
 
+	// Minimum border width is 25 cols.
+	// Need at least this much for select/exit options.
+	if (borderCols < 25)
+		borderCols = 25;
+
 	// Determining starting row and column for border (inner)
 	startCol = ((windowCols / 2) - (borderCols / 2));
 	startRow = ((windowRows / 2) - (borderRows / 2));
@@ -242,8 +252,8 @@ void decorateMenu() {
 	printf("\033[%i;%iH%s", startRow - 1, startCol, "Select Option");
 
 	// Border size (outer)
-	borderCols = menuCols + 12;
-	borderRows = menuRows + 8;
+	borderCols += 4;
+	borderRows += 4;
 
 	// Determining starting row and column for border (outer)
 	startCol = ((windowCols / 2) - (borderCols / 2));
@@ -254,7 +264,7 @@ void decorateMenu() {
 		startRow = 0;
 
 	// Add to the bottom of the border (outer) for select/exit options
-	borderRows += 2;
+	borderRows += 3;
 
 	// printing border (outer)
 	for (int row = 0; row < borderRows; ++row)
@@ -267,10 +277,12 @@ void decorateMenu() {
 				printf("\033[%i;%iH%c", row + startRow, col + startCol, '|');
 			else if (col == borderCols - 1)
 				printf("\033[%i;%iH%c", row + startRow, col + startCol, '|');
+			else if (row == borderRows - 3)
+				printf("\033[%i;%iH%c", row + startRow, col + startCol, '=');
 	
 }
 
-void printMenu(int o) {
+void printMenu(int lo, int fo) {
 	int startRow, startCol;
 
 	// Determining starting row and column for menu
@@ -281,13 +293,13 @@ void printMenu(int o) {
 	for (int row = 0; row < menuRows; ++row) {
 
 		// highlighting current selection text
-		printf( (row == o - 1) ? KMAG : KNRM );
+		printf( (row == lo - 1) ? KMAG : KNRM );
 
 		for (int col = 0; menu[row][col] != '\0'; ++col) {
 
 			// Printing selection marker if on selected row, and removing any previous
 			// marker if not.
-			if (row == o - 1 && col == 0)
+			if (row == lo - 1 && col == 0)
 				printf("\033[%i;%iH%c", row + startRow, col + startCol - 2, '*');
 			else if (col == 0)
 				printf("\033[%i;%iH%c", row + startRow, col + startCol - 2, SPACE);
@@ -295,6 +307,20 @@ void printMenu(int o) {
 			// printing menu text
 			printf("\033[%i;%iH%c", row + startRow, col + startCol, menu[row][col]);
 		}
+
+		// printing menu foot options (select/exit)
+		if (row == menuRows - 1) {
+			int sRow = row + startRow + 6;
+			int sCol = (windowCols / 2) - ((menuCols + 8 > 25 ? menuCols + 8 : 25) / 2) + 1;
+			int eCol = (windowCols / 2) + ((menuCols + 8 > 25 ? menuCols + 8 : 25) / 2) - 8;
+			printf( (fo == 1) ? KMAG : KNRM );
+			printf("\033[%i;%iH%s", sRow, sCol, "[ select ]");
+			printf( (fo == 2) ? KMAG : KNRM );
+			printf("\033[%i;%iH%s", sRow, eCol, "[ exit ]");
+		}
+
+		// Changing back to normal text color
+		printf(KNRM);
 	}
 }
 
