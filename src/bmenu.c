@@ -213,7 +213,7 @@ void printWindowHeader(void) {
 
 void printMenuBorder() {
 	int startRow, startCol;
-	int colPadding = 3;
+	int colPadding = 4;
 	int rowPadding = 2;
 	int borderCols = menuCols + (colPadding * 2);
 	int borderRows = menuRows + (rowPadding * 2);
@@ -249,9 +249,22 @@ void printMenu(int o) {
 
 	// Inserting menu in to terminal window
 	for (int row = 0; row < menuRows; ++row) {
+
+		// highlighting current selection text
 		printf( (row == o - 1) ? KMAG : KNRM );
-		for (int col = 0; menu[row][col] != '\0'; ++col)
+
+		for (int col = 0; menu[row][col] != '\0'; ++col) {
+
+			// Printing selection marker if on selected row, and removing any previous
+			// marker if not.
+			if (row == o - 1 && col == 0)
+				printf("\033[%i;%iH%c", row + startRow, col + startCol - 2, '*');
+			else if (col == 0)
+				printf("\033[%i;%iH%c", row + startRow, col + startCol - 2, SPACE);
+
+			// printing menu text
 			printf("\033[%i;%iH%c", row + startRow, col + startCol, menu[row][col]);
+		}
 	}
 }
 
