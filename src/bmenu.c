@@ -44,8 +44,8 @@ int windowRows, windowCols;
  ***************************/
 int main (void) {
 	int loadMenuConfig(void);
-	void printHeader(void);
-	void printBorder(void);
+	void printWindowHeader(void);
+	void printMenuBorder(void);
 	void printMenu(int);
 
 	// Getting menu config
@@ -77,10 +77,10 @@ int main (void) {
 	}
 
 	// Outer header
-	printHeader();
+	printWindowHeader();
 
 	// Menu Border and Title
-	printBorder();
+	printMenuBorder();
 
 	// Setting terminal input mode to turn off echo and buffering
 	static struct termios oldt, newt;
@@ -200,7 +200,7 @@ int loadMenuConfig(void) {
 	return 0;
 }
 
-void printHeader(void) {
+void printWindowHeader(void) {
 	int textRow = 1;
 	int barRow = 2;
 	int barChar = '=';
@@ -211,7 +211,7 @@ void printHeader(void) {
 		printf("\033[%i;%iH%c", barRow, col, barChar);
 }
 
-void printBorder() {
+void printMenuBorder() {
 	int startRow, startCol;
 	int colPadding = 3;
 	int rowPadding = 2;
