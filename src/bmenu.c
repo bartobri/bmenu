@@ -33,10 +33,13 @@
 // Making menu vars global
 char menu[MAX_MENU_OPTIONS][MAX_MENU_CHAR];
 char command[MAX_MENU_OPTIONS][MAX_COMMAND_CHAR];
-int menuRows = 0, menuCols = 0;
 
 // Making window dimentions global
 int windowRows, windowCols;
+
+// Function prototypes
+int getMenuRows(void);
+int getMenuCols(void);
 
 
 /***************************
@@ -47,6 +50,14 @@ int main (void) {
 	void windowHeader(void);
 	void decorateMenu(void);
 	void printMenu(int, int);
+
+	// Initialize menu and command arrays
+	for (int row = 0; row < MAX_MENU_OPTIONS; ++row) {
+		for (int col = 0; col < MAX_MENU_CHAR; ++col)
+			menu[row][col] = '\0';
+		for (int col = 0; col < MAX_COMMAND_CHAR; ++col)
+			command[row][col] = '\0';
+	}
 
 	// Getting menu config
 	// TODO - see if I can remove the use of globals in loadMenuConfig()
@@ -92,6 +103,7 @@ int main (void) {
 	// Menu loop
 	int menuListOption = 1, menuFootOption = 1;
 	int input = 0;
+	int menuRows = getMenuRows();
 	do {
 		// Check input
 		if (input == 27) {
@@ -147,9 +159,8 @@ int loadMenuConfig(void) {
 		return 2;
 	}
 
-	int tmpCols = 0;
 	_Bool menuOn = 1, commandOn = 0;
-	int l = 0, i = 0, c, lc;
+	int l = 0, i = 0, c;
 	while((c = getc(menuConfig)) != EOF) {
 		if (menuOn && i == MAX_MENU_CHAR - 1) {
 			menuOn = 0;
@@ -164,13 +175,11 @@ int loadMenuConfig(void) {
 			commandOn = 1;
 			menuOn = 0;
 			i = 0;
-			lc = c;
 			continue;
 		} else if (c == '\n') {
 			menuOn = 1;
 			commandOn = 0;
 			i = 0;
-			lc = c;
 			++l;
 			if (l > MAX_MENU_OPTIONS - 1)
 				break;
@@ -184,19 +193,11 @@ int loadMenuConfig(void) {
 		if (menuOn) {
 			menu[l][i] = c;
 			menu[l][i+1] = '\0';
-			++tmpCols;
 		} else if (commandOn) {
 			command[l][i] = c;
 			command[l][i+1] = '\0';
-			tmpCols = 0;
 		}
 
-		if (menuRows == 0 || lc == '\n')
-			++menuRows;
-		if (tmpCols > menuCols)
-			menuCols = tmpCols;
-
-		lc = c;
 		++i;
 	}
 	
@@ -220,8 +221,8 @@ void decorateMenu() {
 	int borderCols, borderRows, startRow, startCol;
 
 	// Border size (inner)
-	borderCols = menuCols + 8;
-	borderRows = menuRows + 4;
+	borderCols = getMenuCols() + 8;
+	borderRows = getMenuRows() + 4;
 
 	// Minimum border width is 25 cols.
 	// Need at least this much for select/exit options.
@@ -284,6 +285,8 @@ void decorateMenu() {
 
 void printMenu(int lo, int fo) {
 	int startRow, startCol;
+	int menuRows = getMenuRows();
+	int menuCols = getMenuCols();
 
 	// Determining starting row and column for menu
 	startCol = ((windowCols / 2) - (menuCols / 2)) > 0 ? ((windowCols / 2) - (menuCols / 2)) : 0;
@@ -324,3 +327,22 @@ void printMenu(int lo, int fo) {
 	}
 }
 
+int getMenuRows(void) {
+	int rows;
+
+	for (rows = 0; menu[rows][0] != '\0' && rows < MAX_MENU_OPTIONS; ++rows)
+		;
+
+	return rows;
+}
+
+int getMenuCols(void) {
+	int maxCols = 0;
+
+	for (int rows = 0; menu[rows][0] != '\0' && rows < MAX_MENU_OPTIONS; ++rows)
+		for (int cols = 1; menu[rows][cols] != '\0' && cols < MAX_MENU_CHAR; ++cols)
+			if (maxCols < cols)
+				maxCols = cols;
+
+	return maxCols + 1;
+}
