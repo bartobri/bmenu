@@ -42,7 +42,8 @@ int windowRows, windowCols;
  ***************************/
 int main (void) {
 	int loadMenuConfig(void);
-	void printOuterHeader(void);
+	void printHeader(void);
+	void printBorder(void);
 	void printMenu(int);
 
 	// Getting menu config
@@ -74,7 +75,10 @@ int main (void) {
 	}
 
 	// Outer header
-	printOuterHeader();
+	printHeader();
+
+	// Menu Border and Title
+	printBorder();
 
 	// Setting terminal input mode to turn off echo and buffering
 	static struct termios oldt, newt;
@@ -194,8 +198,48 @@ int loadMenuConfig(void) {
 	return 0;
 }
 
+void printHeader(void) {
+	int textRow = 1;
+	int barRow = 2;
+	int barChar = '=';
+
+	printf("\033[%i;%iH%s", textRow, 2, "B-MENU");
+
+	for (int col = 0; col < windowCols; ++col)
+		printf("\033[%i;%iH%c", barRow, col, barChar);
+}
+
+void printBorder() {
+	int startRow, startCol;
+	int colPadding = 3;
+	int rowPadding = 2;
+	int borderCols = menuCols + (colPadding * 2);
+	int borderRows = menuRows + (rowPadding * 2);
+
+	// Determining starting row and column for menu
+	startCol = ((windowCols / 2) - (borderCols / 2));
+	startRow = ((windowRows / 2) - (borderRows / 2));
+	if (startCol < 0)
+		startCol = 0;
+	if (startRow < 0)
+		startRow = 0;
+
+	// Inserting menu in to terminal window
+	for (int row = 0; row < borderRows; ++row)
+		for (int col = 0; col < borderCols; ++col) {
+			if (row == 0)
+				printf("\033[%i;%iH%c", row + startRow, col + startCol, '=');
+			else if (row == borderRows - 1)
+				printf("\033[%i;%iH%c", row + startRow, col + startCol, '=');
+			else if (col == 0)
+				printf("\033[%i;%iH%c", row + startRow, col + startCol, '|');
+			else if (col == borderCols - 1)
+				printf("\033[%i;%iH%c", row + startRow, col + startCol, '|');
+		}
+}
+
 void printMenu(int o) {
-	int startRow = 1, startCol = 1;
+	int startRow, startCol;
 
 	// Determining starting row and column for menu
 	startCol = ((windowCols / 2) - (menuCols / 2)) > 0 ? ((windowCols / 2) - (menuCols / 2)) : 0;
@@ -209,13 +253,3 @@ void printMenu(int o) {
 	}
 }
 
-void printOuterHeader(void) {
-	int textRow = 1;
-	int barRow = 2;
-	int barChar = '=';
-
-	printf("\033[%i;%iH%s", textRow, 2, "B-MENU");
-
-	for (int col = 0; col < windowCols; ++col)
-		printf("\033[%i;%iH%c", barRow, col, barChar);
-}
