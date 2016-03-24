@@ -21,6 +21,18 @@
 #define NEWLINE              012
 #define ENTER                012
 
+#define BOX_RIGHT_BOTTOM     "\e(0\x6a\e(B"
+#define BOX_RIGHT_TOP        "\e(0\x6b\e(B"
+#define BOX_LEFT_TOP         "\e(0\x6c\e(B"
+#define BOX_LEFT_BOTTOM      "\e(0\x6d\e(B"
+#define BOX_MIDDLE_CROSS     "\e(0\x6e\e(B"
+#define BOX_HORIZONTAL_LINE  "\e(0\x71\e(B"
+#define BOX_LEFT_CROSS       "\e(0\x74\e(B"
+#define BOX_RIGHT_CROSS      "\e(0\x75\e(B"
+#define BOX_BOTTOM_CROSS     "\e(0\x76\e(B"
+#define BOX_TOP_CROSS        "\e(0\x77\e(B"
+#define BOX_VERTICAL_LINE    "\e(0\x78\e(B"
+
 #define KNRM                 "\x1B[0m"
 #define KRED                 "\x1B[31m"
 #define KGRN                 "\x1B[32m"
@@ -58,7 +70,6 @@ int main (void) {
 	}
 
 	// Getting menu config
-	// TODO - see if I can remove the use of globals in loadMenuConfig()
 	int result = loadMenuConfig();
 	if (result == 1) {
 		fprintf(stderr, "Please set HOME environment variable.\n");
@@ -207,12 +218,11 @@ int loadMenuConfig(void) {
 void windowHeader(void) {
 	int textRow = 1;
 	int barRow = 2;
-	int barChar = '=';
 
 	printf("\033[%i;%iH%s", textRow, 2, "B-MENU v" VERSION);
 
 	for (int col = 0; col < windowCols; ++col)
-		printf("\033[%i;%iH%c", barRow, col, barChar);
+		printf("\033[%i;%iH" BOX_HORIZONTAL_LINE, barRow, col);
 }
 
 void decorateMenu() {
@@ -238,14 +248,22 @@ void decorateMenu() {
 	// printing border (inner)
 	for (int row = 0; row < borderRows; ++row)
 		for (int col = 0; col < borderCols; ++col)
-			if (row == 0)
-				printf("\033[%i;%iH%c", row + startRow, col + startCol, '=');
+			if (row == 0 && col == 0)
+				printf("\033[%i;%iH" BOX_LEFT_TOP, row + startRow, col + startCol);
+			else if (row == 0 && col == borderCols - 1)
+				printf("\033[%i;%iH" BOX_RIGHT_TOP, row + startRow, col + startCol);
+			else if (row == 0)
+				printf("\033[%i;%iH" BOX_HORIZONTAL_LINE, row + startRow, col + startCol);
+			else if (row == borderRows - 1 && col == 0)
+				printf("\033[%i;%iH" BOX_LEFT_BOTTOM, row + startRow, col + startCol);
+			else if (row == borderRows - 1 && col == borderCols - 1)
+				printf("\033[%i;%iH" BOX_RIGHT_BOTTOM, row + startRow, col + startCol);
 			else if (row == borderRows - 1)
-				printf("\033[%i;%iH%c", row + startRow, col + startCol, '=');
+				printf("\033[%i;%iH" BOX_HORIZONTAL_LINE, row + startRow, col + startCol);
 			else if (col == 0)
-				printf("\033[%i;%iH%c", row + startRow, col + startCol, '|');
+				printf("\033[%i;%iH" BOX_VERTICAL_LINE, row + startRow, col + startCol);
 			else if (col == borderCols - 1)
-				printf("\033[%i;%iH%c", row + startRow, col + startCol, '|');
+				printf("\033[%i;%iH" BOX_VERTICAL_LINE, row + startRow, col + startCol);
 
 	// Printing (inner) border title
 	printf("\033[%i;%iH%s", startRow - 1, startCol, "Select Option");
@@ -268,16 +286,28 @@ void decorateMenu() {
 	// printing border (outer)
 	for (int row = 0; row < borderRows; ++row)
 		for (int col = 0; col < borderCols; ++col)
-			if (row == 0)
-				printf("\033[%i;%iH%c", row + startRow, col + startCol, '=');
+			if (row == 0 && col == 0)
+				printf("\033[%i;%iH" BOX_LEFT_TOP, row + startRow, col + startCol);
+			else if (row == 0 && col == borderCols - 1)
+				printf("\033[%i;%iH" BOX_RIGHT_TOP, row + startRow, col + startCol);
+			else if (row == 0)
+				printf("\033[%i;%iH" BOX_HORIZONTAL_LINE, row + startRow, col + startCol);
+			else if (row == borderRows - 1 && col == 0)
+				printf("\033[%i;%iH" BOX_LEFT_BOTTOM, row + startRow, col + startCol);
+			else if (row == borderRows - 1 && col == borderCols - 1)
+				printf("\033[%i;%iH" BOX_RIGHT_BOTTOM, row + startRow, col + startCol);
 			else if (row == borderRows - 1)
-				printf("\033[%i;%iH%c", row + startRow, col + startCol, '=');
+				printf("\033[%i;%iH" BOX_HORIZONTAL_LINE, row + startRow, col + startCol);
+			else if (col == 0 && row == borderRows - 3)
+				printf("\033[%i;%iH" BOX_LEFT_CROSS, row + startRow, col + startCol);
+			else if (col == borderCols - 1 && row == borderRows - 3)
+				printf("\033[%i;%iH" BOX_RIGHT_CROSS, row + startRow, col + startCol);
 			else if (col == 0)
-				printf("\033[%i;%iH%c", row + startRow, col + startCol, '|');
+				printf("\033[%i;%iH" BOX_VERTICAL_LINE, row + startRow, col + startCol);
 			else if (col == borderCols - 1)
-				printf("\033[%i;%iH%c", row + startRow, col + startCol, '|');
+				printf("\033[%i;%iH" BOX_VERTICAL_LINE, row + startRow, col + startCol);
 			else if (row == borderRows - 3)
-				printf("\033[%i;%iH%c", row + startRow, col + startCol, '=');
+				printf("\033[%i;%iH" BOX_HORIZONTAL_LINE, row + startRow, col + startCol);
 	
 }
 
