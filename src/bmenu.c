@@ -23,17 +23,51 @@
 
 // Hex codes for box chars according to:
 // http://www.utf8-chartable.de/unicode-utf8-table.pl?start=9472&unicodeinhtml=dec
-#define BOX_RIGHT_BOTTOM     {0xe2, 0x94, 0x98, '\0'}
-#define BOX_RIGHT_TOP        {0xe2, 0x94, 0x90, '\0'}
-#define BOX_LEFT_TOP         {0xe2, 0x94, 0x8c, '\0'}
-#define BOX_LEFT_BOTTOM      {0xe2, 0x94, 0x94, '\0'}
-#define BOX_MIDDLE_CROSS     {0xe2, 0x94, 0xbc, '\0'}
-#define BOX_HORIZONTAL_LINE  {0xe2, 0x94, 0x80, '\0'}
-#define BOX_LEFT_CROSS       {0xe2, 0x94, 0x9c, '\0'}
-#define BOX_RIGHT_CROSS      {0xe2, 0x94, 0xa4, '\0'}
-#define BOX_BOTTOM_CROSS     {0xe2, 0x94, 0xb4, '\0'}
-#define BOX_TOP_CROSS        {0xe2, 0x94, 0xac, '\0'}
-#define BOX_VERTICAL_LINE    {0xe2, 0x94, 0x82, '\0'}
+#define BOX_LINE_HORIZONTAL          {0xe2, 0x94, 0x80, '\0'}
+#define BOX_LINE_HORIZONTAL_H        {0xe2, 0x94, 0x81, '\0'}
+#define BOX_LINE_HORIZONTAL_D        {0xe2, 0x95, 0x90, '\0'}
+#define BOX_LINE_VERTICAL            {0xe2, 0x94, 0x82, '\0'}
+#define BOX_LINE_VERTICAL_H          {0xe2, 0x94, 0x83, '\0'}
+#define BOX_LINE_VERTICAL_D          {0xe2, 0x95, 0x91, '\0'}
+#define BOX_CORNER_LEFTTOP           {0xe2, 0x94, 0x8c, '\0'}
+#define BOX_CORNER_LEFTTOP_H         {0xe2, 0x94, 0x8f, '\0'}
+#define BOX_CORNER_LEFTTOP_D         {0xe2, 0x95, 0x94, '\0'}
+#define BOX_CORNER_RIGHTTOP          {0xe2, 0x94, 0x90, '\0'}
+#define BOX_CORNER_RIGHTTOP_HL       {0xe2, 0x94, 0x91, '\0'}
+#define BOX_CORNER_RIGHTTOP_DL       {0xe2, 0x95, 0x95, '\0'}
+#define BOX_CORNER_RIGHTTOP_HD       {0xe2, 0x94, 0x92, '\0'}
+#define BOX_CORNER_RIGHTTOP_DD       {0xe2, 0x95, 0x96, '\0'}
+#define BOX_CORNER_RIGHTTOP_H        {0xe2, 0x94, 0x93, '\0'}
+#define BOX_CORNER_RIGHTTOP_D        {0xe2, 0x95, 0x97, '\0'}
+#define BOX_CORNER_LEFTBOTTOM        {0xe2, 0x94, 0x94, '\0'}
+#define BOX_CORNER_LEFTBOTTOM_HR     {0xe2, 0x94, 0x95, '\0'}
+#define BOX_CORNER_LEFTBOTTOM_DR     {0xe2, 0x95, 0x98, '\0'}
+#define BOX_CORNER_LEFTBOTTOM_HU     {0xe2, 0x94, 0x96, '\0'}
+#define BOX_CORNER_LEFTBOTTOM_DU     {0xe2, 0x95, 0x99, '\0'}
+#define BOX_CORNER_LEFTBOTTOM_H      {0xe2, 0x94, 0x97, '\0'}
+#define BOX_CORNER_LEFTBOTTOM_D      {0xe2, 0x95, 0x9a, '\0'}
+#define BOX_CORNER_RIGHTBOTTOM       {0xe2, 0x94, 0x98, '\0'}
+#define BOX_CORNER_RIGHTBOTTOM_H     {0xe2, 0x94, 0x9b, '\0'}
+#define BOX_CORNER_RIGHTBOTTOM_D     {0xe2, 0x95, 0x9d, '\0'}
+#define BOX_CROSS_LEFT               {0xe2, 0x94, 0x9c, '\0'}
+#define BOX_CROSS_LEFT_HD            {0xe2, 0x94, 0xa0, '\0'}
+#define BOX_CROSS_LEFT_DD            {0xe2, 0x95, 0x9f, '\0'}
+#define BOX_CROSS_LEFT_H             {0xe2, 0x94, 0xa3, '\0'}
+#define BOX_CROSS_LEFT_D             {0xe2, 0x95, 0xa0, '\0'}
+#define BOX_CROSS_RIGHT              {0xe2, 0x94, 0xa4, '\0'}
+#define BOX_CROSS_RIGHT_H            {0xe2, 0x94, 0xab, '\0'}
+#define BOX_CROSS_RIGHT_D            {0xe2, 0x95, 0xa3, '\0'}
+#define BOX_CROSS_TOP                {0xe2, 0x94, 0xac, '\0'}
+#define BOX_CROSS_TOP_H              {0xe2, 0x94, 0xb3, '\0'}
+#define BOX_CROSS_TOP_D              {0xe2, 0x95, 0xa6, '\0'}
+#define BOX_CROSS_BOTTOM             {0xe2, 0x94, 0xb4, '\0'}
+#define BOX_CROSS_BOTTOM_H           {0xe2, 0x94, 0xbb, '\0'}
+#define BOX_CROSS_BOTTOM_D           {0xe2, 0x95, 0xa9, '\0'}
+#define BOX_CROSS_MIDDLE             {0xe2, 0x94, 0xbc, '\0'}
+#define BOX_CROSS_MIDDLE_H           {0xe2, 0x94, 0x8b, '\0'}
+#define BOX_CROSS_MIDDLE_D           {0xe2, 0x95, 0xac, '\0'}
+#define SHADE_MEDIUM                 {0xe2, 0x96, 0x92, '\0'}
+#define POINTER_RIGHT                {0xe2, 0x96, 0xb6, '\0'}
 
 #define KNRM                 "\x1B[0m"
 #define KRED                 "\x1B[31m"
@@ -41,7 +75,9 @@
 #define KYEL                 "\x1B[33m"
 #define KBLU                 "\x1B[34m"
 #define KMAG                 "\x1B[35m"
+#define KMAG_BOLD            "\x1B[35;1m"
 #define KCYN                 "\x1B[36m"
+#define KCYN_BOLD            "\x1B[36;1m"
 #define KWHT                 "\x1B[37m"
 
 // Global Vars
@@ -136,6 +172,7 @@ int main (void) {
 		printMenu(menuListOption, menuFootOption);
 
 		// Position cursor at the bottom of the terminal window
+		printf(KNRM);
 		printf("\033[%i;%iH", windowRows, 1);
 
 	} while ((input = getchar()) != ENTER);
@@ -229,10 +266,11 @@ void windowHeader(void) {
 	int textRow = 1;
 	int barRow = 2;
 
+	printf(KCYN_BOLD);
 	printf("\033[%i;%iH%s", textRow, 2, "B-MENU v" VERSION);
 
 	for (int col = 0; col < windowCols; ++col) {
-		char c[] = BOX_HORIZONTAL_LINE;
+		char c[] = BOX_LINE_HORIZONTAL_D;
 		printf("\033[%i;%iH%s", barRow, col, c);
 	}
 }
@@ -266,32 +304,33 @@ void decorateMenu() {
 	for (int row = 0; row < borderRows; ++row)
 		for (int col = 0; col < borderCols; ++col)
 			if (row == 0 && col == 0) {
-				char c[] = BOX_LEFT_TOP;
+				char c[] = BOX_CORNER_LEFTTOP;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
 			} else if (row == 0 && col == borderCols - 1) {
-				char c[] = BOX_RIGHT_TOP;
+				char c[] = BOX_CORNER_RIGHTTOP_DD;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
 			} else if (row == 0) {
-				char c[] = BOX_HORIZONTAL_LINE;
+				char c[] = BOX_LINE_HORIZONTAL;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
 			} else if (row == borderRows - 1 && col == 0) {
-				char c[] = BOX_LEFT_BOTTOM;
+				char c[] = BOX_CORNER_LEFTBOTTOM_DR;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
 			} else if (row == borderRows - 1 && col == borderCols - 1) {
-				char c[] = BOX_RIGHT_BOTTOM;
+				char c[] = BOX_CORNER_RIGHTBOTTOM_D;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
 			} else if (row == borderRows - 1) {
-				char c[] = BOX_HORIZONTAL_LINE;
+				char c[] = BOX_LINE_HORIZONTAL_D;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
 			} else if (col == 0) {
-				char c[] = BOX_VERTICAL_LINE;
+				char c[] = BOX_LINE_VERTICAL;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
 			} else if (col == borderCols - 1) {
-				char c[] = BOX_VERTICAL_LINE;
+				char c[] = BOX_LINE_VERTICAL_D;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
 			}
 
 	// Printing (inner) border title
+	printf(KCYN_BOLD);
 	printf("\033[%i;%iH%s", startRow - 1, startCol, "Select Option");
 
 	// Border size (outer)
@@ -313,37 +352,45 @@ void decorateMenu() {
 	for (int row = 0; row < borderRows; ++row)
 		for (int col = 0; col < borderCols; ++col)
 			if (row == 0 && col == 0) {
-				char c[] = BOX_LEFT_TOP;
+				char c[] = BOX_CORNER_LEFTTOP_D;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
 			} else if (row == 0 && col == borderCols - 1) {
-				char c[] = BOX_RIGHT_TOP;
+				char c[] = BOX_CORNER_RIGHTTOP_DL;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
 			} else if (row == 0) {
-				char c[] = BOX_HORIZONTAL_LINE;
+				char c[] = BOX_LINE_HORIZONTAL_D;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
 			} else if (row == borderRows - 1 && col == 0) {
-				char c[] = BOX_LEFT_BOTTOM;
+				char c[] = BOX_CORNER_LEFTBOTTOM_DU;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
 			} else if (row == borderRows - 1 && col == borderCols - 1) {
-				char c[] = BOX_RIGHT_BOTTOM;
+				char c[] = BOX_CORNER_RIGHTBOTTOM;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+				char c2[] = SHADE_MEDIUM;
+				printf("\033[%i;%iH%s", row + startRow + 1, col + startCol + 1, c2);
 			} else if (row == borderRows - 1) {
-				char c[] = BOX_HORIZONTAL_LINE;
+				char c[] = BOX_LINE_HORIZONTAL;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+				char c2[] = SHADE_MEDIUM;
+				printf("\033[%i;%iH%s", row + startRow + 1, col + startCol + 1, c2);
 			} else if (col == 0 && row == borderRows - 3) {
-				char c[] = BOX_LEFT_CROSS;
+				char c[] = BOX_CROSS_LEFT_DD;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
 			} else if (col == borderCols - 1 && row == borderRows - 3) {
-				char c[] = BOX_RIGHT_CROSS;
+				char c[] = BOX_CROSS_RIGHT;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+				char c2[] = SHADE_MEDIUM;
+				printf("\033[%i;%iH%s", row + startRow + 1, col + startCol + 1, c2);
 			} else if (col == 0) {
-				char c[] = BOX_VERTICAL_LINE;
+				char c[] = BOX_LINE_VERTICAL_D;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
 			} else if (col == borderCols - 1) {
-				char c[] = BOX_VERTICAL_LINE;
+				char c[] = BOX_LINE_VERTICAL;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+				char c2[] = SHADE_MEDIUM;
+				printf("\033[%i;%iH%s", row + startRow + 1, col + startCol + 1, c2);
 			} else if (row == borderRows - 3) {
-				char c[] = BOX_HORIZONTAL_LINE;
+				char c[] = BOX_LINE_HORIZONTAL;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
 			}
 	
@@ -373,15 +420,16 @@ void printMenu(int lo, int fo) {
 	for (int row = 0; row < menuRows; ++row) {
 
 		// highlighting current selection text
-		printf( (row == lo - 1) ? KMAG : KNRM );
+		printf( (row == lo - 1) ? KMAG_BOLD : KNRM KCYN );
 
 		for (int col = 0; menu[row][col] != '\0'; ++col) {
 
 			// Printing selection marker if on selected row, and removing any previous
 			// marker if not.
-			if (row == lo - 1 && col == 0)
-				printf("\033[%i;%iH%c", row + startRow, col + startCol - 2, '*');
-			else if (col == 0)
+			if (row == lo - 1 && col == 0) {
+				char c[] = POINTER_RIGHT;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol - 2, c);
+			} else if (col == 0)
 				printf("\033[%i;%iH%c", row + startRow, col + startCol - 2, SPACE);
 
 			// printing menu text
@@ -393,14 +441,11 @@ void printMenu(int lo, int fo) {
 			int sRow = row + startRow + 6;
 			int sCol = (windowCols / 2) - ((menuCols + 8 > 25 ? menuCols + 8 : 25) / 2) + 1;
 			int eCol = (windowCols / 2) + ((menuCols + 8 > 25 ? menuCols + 8 : 25) / 2) - 8;
-			printf( (fo == 1) ? KMAG : KNRM );
-			printf("\033[%i;%iH%s", sRow, sCol, "[ select ]");
-			printf( (fo == 2) ? KMAG : KNRM );
-			printf("\033[%i;%iH%s", sRow, eCol, "[ exit ]");
+			printf( (fo == 1) ? KMAG_BOLD : KNRM KCYN );
+			printf("\033[%i;%iH%s", sRow, sCol, "< select >");
+			printf( (fo == 2) ? KMAG_BOLD : KNRM KCYN );
+			printf("\033[%i;%iH%s", sRow, eCol, "< exit >");
 		}
-
-		// Changing back to normal text color
-		printf(KNRM);
 	}
 }
 
