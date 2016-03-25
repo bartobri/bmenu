@@ -21,17 +21,19 @@
 #define NEWLINE              012
 #define ENTER                012
 
-#define BOX_RIGHT_BOTTOM     "\e(0\x6a\e(B"
-#define BOX_RIGHT_TOP        "\e(0\x6b\e(B"
-#define BOX_LEFT_TOP         "\e(0\x6c\e(B"
-#define BOX_LEFT_BOTTOM      "\e(0\x6d\e(B"
-#define BOX_MIDDLE_CROSS     "\e(0\x6e\e(B"
-#define BOX_HORIZONTAL_LINE  "\e(0\x71\e(B"
-#define BOX_LEFT_CROSS       "\e(0\x74\e(B"
-#define BOX_RIGHT_CROSS      "\e(0\x75\e(B"
-#define BOX_BOTTOM_CROSS     "\e(0\x76\e(B"
-#define BOX_TOP_CROSS        "\e(0\x77\e(B"
-#define BOX_VERTICAL_LINE    "\e(0\x78\e(B"
+// Hex codes for box chars according to:
+// http://www.utf8-chartable.de/unicode-utf8-table.pl?start=9472&unicodeinhtml=dec
+#define BOX_RIGHT_BOTTOM     {0xe2, 0x94, 0x98, '\0'}
+#define BOX_RIGHT_TOP        {0xe2, 0x94, 0x90, '\0'}
+#define BOX_LEFT_TOP         {0xe2, 0x94, 0x8c, '\0'}
+#define BOX_LEFT_BOTTOM      {0xe2, 0x94, 0x94, '\0'}
+#define BOX_MIDDLE_CROSS     {0xe2, 0x94, 0xbc, '\0'}
+#define BOX_HORIZONTAL_LINE  {0xe2, 0x94, 0x80, '\0'}
+#define BOX_LEFT_CROSS       {0xe2, 0x94, 0x9c, '\0'}
+#define BOX_RIGHT_CROSS      {0xe2, 0x94, 0xa4, '\0'}
+#define BOX_BOTTOM_CROSS     {0xe2, 0x94, 0xb4, '\0'}
+#define BOX_TOP_CROSS        {0xe2, 0x94, 0xac, '\0'}
+#define BOX_VERTICAL_LINE    {0xe2, 0x94, 0x82, '\0'}
 
 #define KNRM                 "\x1B[0m"
 #define KRED                 "\x1B[31m"
@@ -229,8 +231,10 @@ void windowHeader(void) {
 
 	printf("\033[%i;%iH%s", textRow, 2, "B-MENU v" VERSION);
 
-	for (int col = 0; col < windowCols; ++col)
-		printf("\033[%i;%iH" BOX_HORIZONTAL_LINE, barRow, col);
+	for (int col = 0; col < windowCols; ++col) {
+		char c[] = BOX_HORIZONTAL_LINE;
+		printf("\033[%i;%iH%s", barRow, col, c);
+	}
 }
 
 /*************************************************
@@ -261,22 +265,31 @@ void decorateMenu() {
 	// printing border (inner)
 	for (int row = 0; row < borderRows; ++row)
 		for (int col = 0; col < borderCols; ++col)
-			if (row == 0 && col == 0)
-				printf("\033[%i;%iH" BOX_LEFT_TOP, row + startRow, col + startCol);
-			else if (row == 0 && col == borderCols - 1)
-				printf("\033[%i;%iH" BOX_RIGHT_TOP, row + startRow, col + startCol);
-			else if (row == 0)
-				printf("\033[%i;%iH" BOX_HORIZONTAL_LINE, row + startRow, col + startCol);
-			else if (row == borderRows - 1 && col == 0)
-				printf("\033[%i;%iH" BOX_LEFT_BOTTOM, row + startRow, col + startCol);
-			else if (row == borderRows - 1 && col == borderCols - 1)
-				printf("\033[%i;%iH" BOX_RIGHT_BOTTOM, row + startRow, col + startCol);
-			else if (row == borderRows - 1)
-				printf("\033[%i;%iH" BOX_HORIZONTAL_LINE, row + startRow, col + startCol);
-			else if (col == 0)
-				printf("\033[%i;%iH" BOX_VERTICAL_LINE, row + startRow, col + startCol);
-			else if (col == borderCols - 1)
-				printf("\033[%i;%iH" BOX_VERTICAL_LINE, row + startRow, col + startCol);
+			if (row == 0 && col == 0) {
+				char c[] = BOX_LEFT_TOP;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (row == 0 && col == borderCols - 1) {
+				char c[] = BOX_RIGHT_TOP;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (row == 0) {
+				char c[] = BOX_HORIZONTAL_LINE;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (row == borderRows - 1 && col == 0) {
+				char c[] = BOX_LEFT_BOTTOM;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (row == borderRows - 1 && col == borderCols - 1) {
+				char c[] = BOX_RIGHT_BOTTOM;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (row == borderRows - 1) {
+				char c[] = BOX_HORIZONTAL_LINE;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (col == 0) {
+				char c[] = BOX_VERTICAL_LINE;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (col == borderCols - 1) {
+				char c[] = BOX_VERTICAL_LINE;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			}
 
 	// Printing (inner) border title
 	printf("\033[%i;%iH%s", startRow - 1, startCol, "Select Option");
@@ -299,28 +312,40 @@ void decorateMenu() {
 	// printing border (outer)
 	for (int row = 0; row < borderRows; ++row)
 		for (int col = 0; col < borderCols; ++col)
-			if (row == 0 && col == 0)
-				printf("\033[%i;%iH" BOX_LEFT_TOP, row + startRow, col + startCol);
-			else if (row == 0 && col == borderCols - 1)
-				printf("\033[%i;%iH" BOX_RIGHT_TOP, row + startRow, col + startCol);
-			else if (row == 0)
-				printf("\033[%i;%iH" BOX_HORIZONTAL_LINE, row + startRow, col + startCol);
-			else if (row == borderRows - 1 && col == 0)
-				printf("\033[%i;%iH" BOX_LEFT_BOTTOM, row + startRow, col + startCol);
-			else if (row == borderRows - 1 && col == borderCols - 1)
-				printf("\033[%i;%iH" BOX_RIGHT_BOTTOM, row + startRow, col + startCol);
-			else if (row == borderRows - 1)
-				printf("\033[%i;%iH" BOX_HORIZONTAL_LINE, row + startRow, col + startCol);
-			else if (col == 0 && row == borderRows - 3)
-				printf("\033[%i;%iH" BOX_LEFT_CROSS, row + startRow, col + startCol);
-			else if (col == borderCols - 1 && row == borderRows - 3)
-				printf("\033[%i;%iH" BOX_RIGHT_CROSS, row + startRow, col + startCol);
-			else if (col == 0)
-				printf("\033[%i;%iH" BOX_VERTICAL_LINE, row + startRow, col + startCol);
-			else if (col == borderCols - 1)
-				printf("\033[%i;%iH" BOX_VERTICAL_LINE, row + startRow, col + startCol);
-			else if (row == borderRows - 3)
-				printf("\033[%i;%iH" BOX_HORIZONTAL_LINE, row + startRow, col + startCol);
+			if (row == 0 && col == 0) {
+				char c[] = BOX_LEFT_TOP;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (row == 0 && col == borderCols - 1) {
+				char c[] = BOX_RIGHT_TOP;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (row == 0) {
+				char c[] = BOX_HORIZONTAL_LINE;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (row == borderRows - 1 && col == 0) {
+				char c[] = BOX_LEFT_BOTTOM;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (row == borderRows - 1 && col == borderCols - 1) {
+				char c[] = BOX_RIGHT_BOTTOM;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (row == borderRows - 1) {
+				char c[] = BOX_HORIZONTAL_LINE;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (col == 0 && row == borderRows - 3) {
+				char c[] = BOX_LEFT_CROSS;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (col == borderCols - 1 && row == borderRows - 3) {
+				char c[] = BOX_RIGHT_CROSS;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (col == 0) {
+				char c[] = BOX_VERTICAL_LINE;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (col == borderCols - 1) {
+				char c[] = BOX_VERTICAL_LINE;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			} else if (row == borderRows - 3) {
+				char c[] = BOX_HORIZONTAL_LINE;
+				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+			}
 	
 }
 
