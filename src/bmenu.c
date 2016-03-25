@@ -9,7 +9,7 @@
 #include <termios.h>         // Support for character input
 #include <unistd.h>          // execl()
 
-#define VERSION              "0.10"
+#define VERSION              "0.1.0"
 
 #define MENU_CONFIG          ".bmenu"
 
@@ -50,7 +50,6 @@ char command[MAX_MENU_OPTIONS][MAX_COMMAND_CHAR];
 // Function prototypes
 int getMenuRows(void);
 int getMenuCols(void);
-
 
 /***************************
  * Main function
