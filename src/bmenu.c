@@ -51,9 +51,12 @@ char command[MAX_MENU_OPTIONS][MAX_COMMAND_CHAR];
 int getMenuRows(void);
 int getMenuCols(void);
 
-/***************************
+/***************************************************
  * Main function
- ***************************/
+ *
+ * Returns non-zero value on error. Check stderr for
+ * more info.
+ ***************************************************/
 int main (void) {
 	int loadMenuConfig(void);
 	void windowHeader(void);
@@ -145,10 +148,12 @@ int main (void) {
 	return 0;
 }
 
-/*************************************************
- * loadMenuConfig() - Loading the menu config file.
- * Return a non-zero result if anything goes wrong.
- *************************************************/
+/***************************************************
+ * loadMenuConfig()
+ *
+ * Loading the menu config file. Return a non-zero
+ * result if anything goes wrong.
+ ***************************************************/
 int loadMenuConfig(void) {
 	char *homeDir = getenv("HOME");;
 
@@ -213,6 +218,11 @@ int loadMenuConfig(void) {
 	return 0;
 }
 
+/*************************************************
+ * windowHeader()
+ *
+ * Prints the window header (title and crossbar).
+ *************************************************/
 void windowHeader(void) {
 	int textRow = 1;
 	int barRow = 2;
@@ -223,6 +233,11 @@ void windowHeader(void) {
 		printf("\033[%i;%iH" BOX_HORIZONTAL_LINE, barRow, col);
 }
 
+/*************************************************
+ * decorateMenu()
+ *
+ * Prints the inner and outer borders for the menu.
+ *************************************************/
 void decorateMenu() {
 	int borderCols, borderRows, startRow, startCol;
 
@@ -309,6 +324,17 @@ void decorateMenu() {
 	
 }
 
+/*************************************************
+ * printMenu()
+ *
+ * Prints the menu options list and the select/exit
+ * options. Also highlights the current selected
+ * options. 
+ * 
+ * Args:
+ * int lo - List Option (currently selected)
+ * int fo - Foot Option (currently selected)
+ *************************************************/
 void printMenu(int lo, int fo) {
 	int startRow, startCol;
 	int menuRows = getMenuRows();
@@ -353,6 +379,17 @@ void printMenu(int lo, int fo) {
 	}
 }
 
+/*************************************************
+ * getMenuRows()
+ *
+ * Gets the number of menu options (i.e. rows)
+ * from the global menu[][] array. This defines
+ * the height of the menu, and is needed for
+ * centering and drawing borders.
+ *
+ * Return:
+ * int - Number of menu rows
+ *************************************************/
 int getMenuRows(void) {
 	int rows;
 
@@ -362,6 +399,17 @@ int getMenuRows(void) {
 	return rows;
 }
 
+/*************************************************
+ * getMenuCols()
+ *
+ * Gets the number of characters (i.e. cols) in
+ * the longest menu option from the global menu[][]
+ * array. This defines the width of the menu, and
+ * is needed for centering and drawing borders.
+ *
+ * Return:
+ * int - Number of characters in longest option
+ *************************************************/
 int getMenuCols(void) {
 	int maxCols = 0;
 
