@@ -7,7 +7,7 @@
 #include <stdlib.h>          // getenv()
 #include <sys/ioctl.h>       // Support for terminal dimentions
 #include <termios.h>         // Support for character input
-#include <unistd.h>          // Support for character input
+#include <unistd.h>          // execl()
 
 #define VERSION              "0.10"
 
@@ -99,7 +99,7 @@ int main (void) {
 	// Print window header
 	windowHeader();
 
-	// Menu title, borders, and select/exit options
+	// Menu title and borders
 	decorateMenu();
 
 	// Setting terminal input mode to turn off echo and buffering
@@ -140,9 +140,8 @@ int main (void) {
 	tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
 
 	// Execute chosen command
-	// TODO - handle command switches
 	if (menuFootOption == 1)
-		execl(command[menuListOption - 1], command[menuListOption - 1], 0);
+		execl("/bin/sh", "/bin/sh", "-c", command[menuListOption - 1], 0);
 
 	return 0;
 }
