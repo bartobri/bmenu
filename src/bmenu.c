@@ -110,7 +110,7 @@ int main (void) {
 	for (row = 0; row < MAX_MENU_OPTIONS; ++row) {
 		for (col = 0; col < MAX_MENU_CHAR; ++col)
 			menu[row][col] = '\0';
-		for (int col = 0; col < MAX_COMMAND_CHAR; ++col)
+		for (col = 0; col < MAX_COMMAND_CHAR; ++col)
 			command[row][col] = '\0';
 	}
 
