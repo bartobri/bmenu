@@ -40,5 +40,7 @@ Configuration
 You can configure B-Menu by editing and/or creating $HOME/.bmenu. The file should consist of pairs of
 menu titles and commands, one pair per line. The pair should be seperated by a colon. below is an example:
 
+```
 Clear Screen:/usr/bin/clear
 Dir Listing:/usr/bin/ls -l
+```
