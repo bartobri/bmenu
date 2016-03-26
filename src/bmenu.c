@@ -186,7 +186,7 @@ int main (void) {
 
 	// Execute chosen command
 	if (menuFootOption == 1)
-		execl("/bin/sh", "/bin/sh", "-c", command[menuListOption - 1], 0);
+		execl("/bin/sh", "/bin/sh", "-c", command[menuListOption - 1], NULL);
 
 	return 0;
 }
