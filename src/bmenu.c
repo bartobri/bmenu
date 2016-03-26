@@ -104,10 +104,11 @@ int main (void) {
 	void windowHeader(void);
 	void decorateMenu(void);
 	void printMenu(int, int);
+	int row, col;
 
 	// Initialize menu and command arrays
-	for (int row = 0; row < MAX_MENU_OPTIONS; ++row) {
-		for (int col = 0; col < MAX_MENU_CHAR; ++col)
+	for (row = 0; row < MAX_MENU_OPTIONS; ++row) {
+		for (col = 0; col < MAX_MENU_CHAR; ++col)
 			menu[row][col] = '\0';
 		for (int col = 0; col < MAX_COMMAND_CHAR; ++col)
 			command[row][col] = '\0';
@@ -130,13 +131,12 @@ int main (void) {
 	windowCols = w.ws_col;
 
 	// initializing terminal window with all spaces
-	for (int c1 = 0; c1 < windowRows; ++c1) {
-		int c2;
-		for (c2 = 0; c2 < windowCols - 1; ++c2) {
-			printf("\033[%i;%iH", c1, c2);
+	for (row = 0; row < windowRows; ++row) {
+		for (col = 0; col < windowCols - 1; ++col) {
+			printf("\033[%i;%iH", row, col);
 			printf("%c", SPACE);
 		}
-		printf("\033[%i;%iH", c1, c2);
+		printf("\033[%i;%iH", row, col);
 		printf("%c", NEWLINE);
 	}
 
@@ -273,7 +273,8 @@ void windowHeader(void) {
 	printf(KCYN_BOLD);
 	printf("\033[%i;%iH%s", textRow, 2, "B-MENU v" VERSION);
 
-	for (int col = 0; col < windowCols; ++col) {
+	int col;
+	for (col = 0; col < windowCols; ++col) {
 		char c[] = BOX_LINE_HORIZONTAL_D;
 		printf("\033[%i;%iH%s", barRow, col, c);
 	}
@@ -305,8 +306,9 @@ void decorateMenu() {
 		startRow = 0;
 
 	// printing border (inner)
-	for (int row = 0; row < borderRows; ++row)
-		for (int col = 0; col < borderCols; ++col)
+	int row, col;
+	for (row = 0; row < borderRows; ++row)
+		for (col = 0; col < borderCols; ++col)
 			if (row == 0 && col == 0) {
 				char c[] = BOX_CORNER_LEFTTOP;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
@@ -353,8 +355,8 @@ void decorateMenu() {
 	borderRows += 3;
 
 	// printing border (outer)
-	for (int row = 0; row < borderRows; ++row)
-		for (int col = 0; col < borderCols; ++col)
+	for (row = 0; row < borderRows; ++row)
+		for (col = 0; col < borderCols; ++col)
 			if (row == 0 && col == 0) {
 				char c[] = BOX_CORNER_LEFTTOP_D;
 				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
@@ -421,12 +423,13 @@ void printMenu(int lo, int fo) {
 	startRow = ((windowRows / 2) - (menuRows / 2)) > 0 ? ((windowRows / 2) - (menuRows / 2)) : 0;
 
 	// Inserting menu in to terminal window
-	for (int row = 0; row < menuRows; ++row) {
+	int row, col;
+	for (row = 0; row < menuRows; ++row) {
 
 		// highlighting current selection text
 		printf( (row == lo - 1) ? KMAG_BOLD : KNRM KCYN );
 
-		for (int col = 0; menu[row][col] != '\0'; ++col) {
+		for (col = 0; menu[row][col] != '\0'; ++col) {
 
 			// Printing selection marker if on selected row, and removing any previous
 			// marker if not.
@@ -487,8 +490,9 @@ int getMenuRows(void) {
 int getMenuCols(void) {
 	int maxCols = 0;
 
-	for (int rows = 0; menu[rows][0] != '\0' && rows < MAX_MENU_OPTIONS; ++rows)
-		for (int cols = 1; menu[rows][cols] != '\0' && cols < MAX_MENU_CHAR; ++cols)
+	int rows, cols;
+	for (rows = 0; menu[rows][0] != '\0' && rows < MAX_MENU_OPTIONS; ++rows)
+		for (cols = 1; menu[rows][cols] != '\0' && cols < MAX_MENU_CHAR; ++cols)
 			if (maxCols < cols)
 				maxCols = cols;
 
