@@ -5,6 +5,12 @@
 // Software Foundation; either version 3 of the License, or (at your option)
 // any later version.  See COPYING for more details.
 
+// TODO
+// - Accept menu title from command line argument
+// - Accept config file path from command argument
+// - Check config file format for errors when parsing
+// - Document how to configure it as a login manager
+
 
 #include <stdio.h>
 #include <string.h>
@@ -131,13 +137,10 @@ int main (void) {
 	windowCols = w.ws_col;
 
 	// initializing terminal window with all spaces
-	for (row = 0; row < windowRows; ++row) {
-		for (col = 0; col < windowCols - 1; ++col) {
-			printf("\033[%i;%iH", row, col);
-			printf("%c", SPACE);
-		}
-		printf("\033[%i;%iH", row, col);
-		printf("%c", NEWLINE);
+	for (row = 1; row <= windowRows; ++row) {
+		for (col = 1; col <= windowCols; ++col)
+			printf("\033[%i;%iH%c", row, col, SPACE);
+		printf("\033[%i;%iH%c", row, col, NEWLINE);
 	}
 
 	// Print window header
@@ -183,6 +186,15 @@ int main (void) {
 
 	// Restore terminal settings before exiting
 	tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
+
+	// Clear window and set cursor at the top
+	for (row = 1; row <= windowRows; ++row) {
+		for (col = 1; col <= windowCols; ++col)
+			printf("\033[%i;%iH%c", row, col, SPACE);
+		printf("\033[%i;%iH%c", row, col, NEWLINE);
+	}
+	printf("\033[%i;%iH", 1, 1);
+	fflush(stdout);
 
 	// Execute chosen command
 	if (menuFootOption == 1)
@@ -274,7 +286,7 @@ void windowHeader(void) {
 	printf("\033[%i;%iH%s", textRow, 2, "B-MENU v" VERSION);
 
 	int col;
-	for (col = 0; col < windowCols; ++col) {
+	for (col = 1; col <= windowCols; ++col) {
 		char c[] = BOX_LINE_HORIZONTAL_D;
 		printf("\033[%i;%iH%s", barRow, col, c);
 	}
