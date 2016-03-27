@@ -1,6 +1,8 @@
 B-Menu
 ======
 
+![Screenshot](http://i.imgur.com/QV5Ra8V.png)
+
 What is B-Menu?
 ---------------
 
