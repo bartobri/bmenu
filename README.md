@@ -71,7 +71,8 @@ if [[ "$(tty)" == '/dev/tty1' ]]; then
 fi
 ```
 
-If you do this, it is best to unclude a menu option to launch a shell:
+If you do this, it is best to unclude a menu option to launch a shell. Add the following to your menu
+options file:
 
 ```
 Shell:/bin/bash --login
