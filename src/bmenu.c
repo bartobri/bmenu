@@ -6,7 +6,6 @@
 // any later version.  See COPYING for more details.
 
 // TODO
-// - Check config file format for errors when parsing
 // - Document how to configure it as a login manager
 
 

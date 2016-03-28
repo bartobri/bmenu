@@ -11,12 +11,7 @@ terminal-based login managers such as CDM. However, it can easily serve as a sim
 any situation where you would like to execute a command from a set of menu selections.
 
 B-Menu has zero dependencies, and it is intentionally feature-minimal. This keeps it easy to install, 
-configure, and run. Plus, who really needs all those extra features anyway? Don't you just want to display
-a menu and execute a command? Me too! B-Menu is for you!
-
-I designed B-Menu to look like it uses ncurses, even though it doesn't actually use it. I love the
-way ncurses looks but didn't want the added overhead. For a simple menu such as this, it really wasn't
-necessary.
+configure, and run. 
 
 License
 -------
@@ -33,16 +28,40 @@ cd ./bmenu/src
 make
 ```
 
-This will create the executable file `bmenu`. From here you can copy it to wherever you like. Typically
-this would be /usr/bin.
+This will create the executable file `bmenu`. Most users will want to copy it to /usr/bin, but you can
+place it anywhere you like.
 
-Configuration
--------------
+Configuring The Menu
+--------------------
 
-You can configure B-Menu by editing and/or creating $HOME/.bmenu. The file should consist of pairs of
-menu titles and commands, one pair per line. The pair should be seperated by a colon. below is an example:
+By default, b-menu looks for menu options in $HOME/.bmenu (use `-c` to override,  see below). This file
+should consist of one menu option and one command on each line, seperated by a colon.
+
+Example:
 
 ```
 Clear Screen:/usr/bin/clear
 Dir Listing:/usr/bin/ls -l
 ```
+
+Command Line Options
+--------------------
+
+### -c 
+
+Use the `-c` option to override the default menu file path:
+```
+bmenu -c /path/to/menu/file
+```
+
+### -t
+
+Use the `-t` option to override the default menu prompt:
+```
+bmenu -c 'Choose an Option:'
+```
+
+Set Up B-Menu as a Login Manager
+--------------------------------
+
+
