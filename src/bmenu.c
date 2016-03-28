@@ -6,7 +6,6 @@
 // any later version.  See COPYING for more details.
 
 // TODO
-// - Accept config file path from command argument
 // - Check config file format for errors when parsing
 // - Document how to configure it as a login manager
 
@@ -105,12 +104,13 @@ int getMenuCols(void);
  * more info.
  ***************************************************/
 int main (int argc, char *argv[]) {
-	int loadMenuConfig(void);
+	int loadMenuConfig(char *);
 	void windowHeader(void);
 	void decorateMenu(char *);
 	void printMenu(int, int);
-	int i, row, col;
 	char *menuTitle = "Select Option";
+	char *configFile = MENU_CONFIG;
+	int i, row, col;
 
 	// Process command arguments
 	for (i = 1; i < argc; ++i) {
@@ -118,6 +118,10 @@ int main (int argc, char *argv[]) {
 		// -t option: set menu title
 		if (strcmp(argv[i], "-t") == 0 && i + 1 < argc)
 			menuTitle = argv[i + 1];
+
+		// -c option: config file path
+		if (strcmp(argv[i], "-c") == 0 && i + 1 < argc)
+			configFile = argv[i + 1];
 	}
 
 	// Initialize menu and command arrays
@@ -129,12 +133,12 @@ int main (int argc, char *argv[]) {
 	}
 
 	// Getting menu config
-	int result = loadMenuConfig();
+	int result = loadMenuConfig(configFile);
 	if (result == 1) {
 		fprintf(stderr, "Please set HOME environment variable.\n");
 		return result;
 	} else if (result == 2) {
-		fprintf(stderr, "Could not open config file: ~/" MENU_CONFIG "\n");
+		fprintf(stderr, "Could not open config file: %s\n", configFile);
 		return result;
 	}
 
@@ -217,18 +221,24 @@ int main (int argc, char *argv[]) {
  * Loading the menu config file. Return a non-zero
  * result if anything goes wrong.
  ***************************************************/
-int loadMenuConfig(void) {
-	char *homeDir = getenv("HOME");;
+int loadMenuConfig(char *config) {
+	char menuConfigPath[200];
 
-	if (homeDir == NULL) {
-		return 1;
+	if (strcmp(config, MENU_CONFIG) == 0) {
+
+		char *homeDir = getenv("HOME");;
+
+		if (homeDir == NULL) {
+			return 1;
+		}
+
+		strcpy(menuConfigPath, homeDir);
+		strcat(menuConfigPath, "/");
+		strcat(menuConfigPath, config);
+	} else {
+		strcpy(menuConfigPath, config);
 	}
 
-	int len = strlen(homeDir) + strlen("/" MENU_CONFIG);
-	char menuConfigPath[len + 1];
-	strcpy(menuConfigPath, homeDir);
-	strcat(menuConfigPath, "/");
-	strcat(menuConfigPath, MENU_CONFIG);
 	FILE *menuConfig;
 	if ((menuConfig = fopen(menuConfigPath, "r")) == NULL) {
 		return 2;
