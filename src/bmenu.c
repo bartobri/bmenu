@@ -6,7 +6,6 @@
 // any later version.  See COPYING for more details.
 
 // TODO
-// - Accept menu title from command line argument
 // - Accept config file path from command argument
 // - Check config file format for errors when parsing
 // - Document how to configure it as a login manager
@@ -105,12 +104,21 @@ int getMenuCols(void);
  * Returns non-zero value on error. Check stderr for
  * more info.
  ***************************************************/
-int main (void) {
+int main (int argc, char *argv[]) {
 	int loadMenuConfig(void);
 	void windowHeader(void);
-	void decorateMenu(void);
+	void decorateMenu(char *);
 	void printMenu(int, int);
-	int row, col;
+	int i, row, col;
+	char *menuTitle = "Select Option";
+
+	// Process command arguments
+	for (i = 1; i < argc; ++i) {
+
+		// -t option: set menu title
+		if (strcmp(argv[i], "-t") == 0 && i + 1 < argc)
+			menuTitle = argv[i + 1];
+	}
 
 	// Initialize menu and command arrays
 	for (row = 0; row < MAX_MENU_OPTIONS; ++row) {
@@ -147,7 +155,7 @@ int main (void) {
 	windowHeader();
 
 	// Menu title and borders
-	decorateMenu();
+	decorateMenu(menuTitle);
 
 	// Setting terminal input mode to turn off echo and buffering
 	static struct termios oldt, newt;
@@ -297,7 +305,7 @@ void windowHeader(void) {
  *
  * Prints the inner and outer borders for the menu.
  *************************************************/
-void decorateMenu() {
+void decorateMenu(char *title) {
 	int borderCols, borderRows, startRow, startCol;
 
 	// Border size (inner)
@@ -349,7 +357,7 @@ void decorateMenu() {
 
 	// Printing (inner) border title
 	printf(KCYN_BOLD);
-	printf("\033[%i;%iH%s", startRow - 1, startCol, "Select Option");
+	printf("\033[%i;%iH%s", startRow - 1, startCol, title);
 
 	// Border size (outer)
 	borderCols += 4;
