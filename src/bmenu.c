@@ -5,10 +5,6 @@
 // Software Foundation; either version 3 of the License, or (at your option)
 // any later version.  See COPYING for more details.
 
-// TODO
-// - Document how to configure it as a login manager
-
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>          // getenv()

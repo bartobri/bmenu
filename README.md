@@ -47,14 +47,10 @@ Dir Listing:/usr/bin/ls -l
 Command Line Options
 --------------------
 
-### -c 
-
 Use the `-c` option to override the default menu file path:
 ```
 bmenu -c /path/to/menu/file
 ```
-
-### -t
 
 Use the `-t` option to override the default menu prompt:
 ```
@@ -64,4 +60,19 @@ bmenu -c 'Choose an Option:'
 Set Up B-Menu as a Login Manager
 --------------------------------
 
+To run b-menu when you login, place the following code in `$HOME/.bash_profile`:
 
+```
+if [[ "$(tty)" == '/dev/tty1' ]]; then                                                                        
+    [[ -n "$BMENU_SPAWN" ]] && return                                                                         
+    export BMENU_SPAWN=1                                                                                      
+    # Avoid executing bmenu when X11 has already been started.                                                
+    [[ -z "$DISPLAY$SSH_TTY$(pgrep xinit)" ]] && exec bmenu                                                   
+fi
+```
+
+If you do this, it is best to unclude a menu option to launch a shell:
+
+```
+Shell:/bin/bash --login
+```
