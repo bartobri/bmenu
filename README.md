@@ -54,7 +54,7 @@ bmenu -c /path/to/menu/file
 
 Use the `-t` option to override the default menu prompt:
 ```
-bmenu -c 'Choose an Option:'
+bmenu -t 'Choose an Option:'
 ```
 
 Set Up B-Menu as a Login Manager
