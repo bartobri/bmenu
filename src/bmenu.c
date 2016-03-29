@@ -215,6 +215,9 @@ int main (int argc, char *argv[]) {
  *
  * Loading the menu config file. Return a non-zero
  * result if anything goes wrong.
+ *
+ * Args:
+ * char *config- Config file path
  ***************************************************/
 int loadMenuConfig(char *config) {
 	char menuConfigPath[200];
@@ -309,6 +312,9 @@ void windowHeader(void) {
  * decorateMenu()
  *
  * Prints the inner and outer borders for the menu.
+ *
+ * Args:
+ * char *title - Menu title
  *************************************************/
 void decorateMenu(char *title) {
 	int borderCols, borderRows, startRow, startCol;
