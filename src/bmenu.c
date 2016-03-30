@@ -72,6 +72,7 @@
 #define SHADE_MEDIUM                 {0xe2, 0x96, 0x92, '\0'}
 #define POINTER_RIGHT                {0xe2, 0x96, 0xb6, '\0'}
 
+// Text colors
 #define KNRM                 "\x1B[0m"
 #define KRED                 "\x1B[31m"
 #define KGRN                 "\x1B[32m"

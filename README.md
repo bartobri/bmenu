@@ -13,6 +13,9 @@ any situation where you would like to execute a command from a set of menu selec
 B-Menu has zero dependencies, and it is intentionally feature-minimal. This keeps it easy to install, 
 configure, and run. 
 
+Note that due to the way I use the extended ascii character set to display menu borders and shading,
+it is not portable to windows systems. (It’s not a bug, it’s a feature!)
+
 License
 -------
 
