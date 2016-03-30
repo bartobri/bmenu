@@ -90,6 +90,10 @@ char menu[MAX_MENU_OPTIONS][MAX_MENU_CHAR];
 char command[MAX_MENU_OPTIONS][MAX_COMMAND_CHAR];
 
 // Function prototypes
+int loadMenuConfig(char *);
+void windowHeader(void);
+void decorateMenu(char *);
+void printMenu(int, int);
 int getMenuRows(void);
 int getMenuCols(void);
 
@@ -100,10 +104,6 @@ int getMenuCols(void);
  * more info.
  ***************************************************/
 int main (int argc, char *argv[]) {
-	int loadMenuConfig(char *);
-	void windowHeader(void);
-	void decorateMenu(char *);
-	void printMenu(int, int);
 	char *menuTitle = "Select Option";
 	char *configFile = MENU_CONFIG;
 	int i, row, col;
