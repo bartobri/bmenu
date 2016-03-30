@@ -14,6 +14,7 @@
 
 #define VERSION              "0.1.0"
 
+#define MENU_TITLE           "Select Option"
 #define MENU_CONFIG          ".bmenu"
 
 #define MAX_MENU_OPTIONS     10
@@ -104,7 +105,7 @@ int getMenuCols(void);
  * more info.
  ***************************************************/
 int main (int argc, char *argv[]) {
-	char *menuTitle = "Select Option";
+	char *menuTitle = MENU_TITLE;
 	char *configFile = MENU_CONFIG;
 	int i, row, col;
 
@@ -296,13 +297,11 @@ int loadMenuConfig(char *config) {
  * Prints the window header (title and crossbar).
  *************************************************/
 void windowHeader(void) {
-	int textRow = 1;
-	int barRow = 2;
+	int col, textRow = 1, barRow = 2;
 
 	printf(KCYN_BOLD);
 	printf("\033[%i;%iH%s", textRow, 2, "B-MENU v" VERSION);
 
-	int col;
 	for (col = 1; col <= windowCols; ++col) {
 		char c[] = BOX_LINE_HORIZONTAL_D;
 		printf("\033[%i;%iH%s", barRow, col, c);
@@ -319,6 +318,7 @@ void windowHeader(void) {
  *************************************************/
 void decorateMenu(char *title) {
 	int borderCols, borderRows, startRow, startCol;
+	int row, col;
 
 	// Border size (inner)
 	borderCols = getMenuCols() + 8;
@@ -338,7 +338,6 @@ void decorateMenu(char *title) {
 		startRow = 0;
 
 	// printing border (inner)
-	int row, col;
 	for (row = 0; row < borderRows; ++row)
 		for (col = 0; col < borderCols; ++col)
 			if (row == 0 && col == 0) {
@@ -446,7 +445,7 @@ void decorateMenu(char *title) {
  * int fo - Foot Option (currently selected)
  *************************************************/
 void printMenu(int lo, int fo) {
-	int startRow, startCol;
+	int row, col, startRow, startCol;
 	int menuRows = getMenuRows();
 	int menuCols = getMenuCols();
 
@@ -455,7 +454,6 @@ void printMenu(int lo, int fo) {
 	startRow = ((windowRows / 2) - (menuRows / 2)) > 0 ? ((windowRows / 2) - (menuRows / 2)) : 0;
 
 	// Inserting menu in to terminal window
-	int row, col;
 	for (row = 0; row < menuRows; ++row) {
 
 		// highlighting current selection text
@@ -521,8 +519,8 @@ int getMenuRows(void) {
  *************************************************/
 int getMenuCols(void) {
 	int maxCols = 0;
-
 	int rows, cols;
+
 	for (rows = 0; menu[rows][0] != '\0' && rows < MAX_MENU_OPTIONS; ++rows)
 		for (cols = 1; menu[rows][cols] != '\0' && cols < MAX_MENU_CHAR; ++cols)
 			if (maxCols < cols)
