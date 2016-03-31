@@ -311,6 +311,14 @@ int loadMenuConfig(char *config) {
 	return 0;
 }
 
+/*************************************************
+ * createConfig()
+ *
+ * Creates default config file at given file path
+ *
+ * Args:
+ * char *menuDefaultPath - file path
+ *************************************************/
 void createConfig(char *menuDefaultPath) {
 	FILE *menu = fopen(menuDefaultPath, "w");
 
@@ -560,6 +568,14 @@ int getMenuCols(void) {
 	return maxCols + 1;
 }
 
+/*************************************************
+ * fileExists()
+ *
+ * Checks if given file path exists.
+ *
+ * Return:
+ * int - TRUE = exists, FALSE = doesn't exist
+ *************************************************/
 int fileExists(char *filename)
 {
 	struct stat buffer;   
