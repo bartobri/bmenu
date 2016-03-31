@@ -1,5 +1,5 @@
 // Copyright (c) 2016 Brian Barto
-//
+// 
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
 // Software Foundation; either version 3 of the License, or (at your option)
@@ -175,8 +175,9 @@ int main (int argc, char *argv[]) {
 	int menuRows = getMenuRows();
 	do {
 		// Check input
-		if (input == 27) {
-			input = getchar();
+                switch(input){
+                    case 27:
+                        input = getchar();
 			input = getchar();
 			if (input == 65 && menuListOption > 1)
 				--menuListOption;
@@ -186,7 +187,22 @@ int main (int argc, char *argv[]) {
 				menuFootOption = 1;
 			else if (input == 67)
 				menuFootOption = 2;
-		}
+                        break;
+                    case 106: // 106 == j
+                        if (menuListOption < menuRows)
+			    ++menuListOption;
+                        break;
+                    case 107: // 107 == k
+                        if (menuListOption > 1)
+			    --menuListOption;
+                        break;
+                    case 104: // 104 == h
+                        menuFootOption = 1;
+                        break;
+                    case 108: // 108 == l
+                        menuFootOption = 2;
+                        break;
+                }
 
 		// Print menu with the current selection highlighted
 		printMenu(menuListOption, menuFootOption);
@@ -240,7 +256,7 @@ int loadMenuConfig(char *config) {
 		strcat(menuConfigPath, "/");
 		strcat(menuConfigPath, config);
 
-                if (!fileExists(config))
+                if (!fileExists(menuConfigPath))
                     createConfig(menuConfigPath);
 	} else {
 		strcpy(menuConfigPath, config);
