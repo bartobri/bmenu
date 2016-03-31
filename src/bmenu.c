@@ -1,5 +1,5 @@
 // Copyright (c) 2016 Brian Barto
-//
+// 
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
 // Software Foundation; either version 3 of the License, or (at your option)
@@ -9,6 +9,8 @@
 #include <string.h>
 #include <stdlib.h>          // getenv()
 #include <sys/ioctl.h>       // Support for terminal dimentions
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <termios.h>         // Support for character input
 #include <unistd.h>          // execl()
 
@@ -97,6 +99,8 @@ void decorateMenu(char *);
 void printMenu(int, int);
 int getMenuRows(void);
 int getMenuCols(void);
+void createConfig(char *);
+int fileExists(char *);
 
 /***************************************************
  * Main function
@@ -171,17 +175,33 @@ int main (int argc, char *argv[]) {
 	int menuRows = getMenuRows();
 	do {
 		// Check input
-		if (input == 27) {
-			input = getchar();
-			input = getchar();
-			if (input == 65 && menuListOption > 1)
-				--menuListOption;
-			else if (input == 66 && menuListOption < menuRows)
-				++menuListOption;
-			else if (input == 68)
+		switch(input) {
+			case 27:
+				input = getchar();
+				input = getchar();
+				if (input == 65 && menuListOption > 1)
+					--menuListOption;
+				else if (input == 66 && menuListOption < menuRows)
+					++menuListOption;
+				else if (input == 68)
+					menuFootOption = 1;
+				else if (input == 67)
+					menuFootOption = 2;
+				break;
+			case 106: // 106 == j
+				if (menuListOption < menuRows)
+				    ++menuListOption;
+				break;
+			case 107: // 107 == k
+				if (menuListOption > 1)
+				    --menuListOption;
+				break;
+			case 104: // 104 == h
 				menuFootOption = 1;
-			else if (input == 67)
+				break;
+			case 108: // 108 == l
 				menuFootOption = 2;
+				break;
 		}
 
 		// Print menu with the current selection highlighted
@@ -234,6 +254,9 @@ int loadMenuConfig(char *config) {
 		strcpy(menuConfigPath, homeDir);
 		strcat(menuConfigPath, "/");
 		strcat(menuConfigPath, config);
+
+		if (!fileExists(menuConfigPath))
+			createConfig(menuConfigPath);
 	} else
 		strcpy(menuConfigPath, config);
 
@@ -286,6 +309,17 @@ int loadMenuConfig(char *config) {
 	fclose(menuConfig);
 
 	return 0;
+}
+
+void createConfig(char *menuDefaultPath) {
+	FILE *menu = fopen(menuDefaultPath, "w");
+
+	if (menu == NULL) 
+		return;       // We will return an error to main in loadMenuConfig()
+
+	fprintf(menu, "Clear Screen:/usr/bin/clear\n");
+	fprintf(menu, "Dir Listing:/usr/bin/ls -l");
+	fclose(menu);
 }
 
 /*************************************************
@@ -524,4 +558,10 @@ int getMenuCols(void) {
 				maxCols = cols;
 
 	return maxCols + 1;
+}
+
+int fileExists(char *filename)
+{
+	struct stat buffer;   
+	return (stat (filename, &buffer) == 0);
 }
