@@ -9,6 +9,8 @@
 #include <string.h>
 #include <stdlib.h>          // getenv()
 #include <sys/ioctl.h>       // Support for terminal dimentions
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <termios.h>         // Support for character input
 #include <unistd.h>          // execl()
 
@@ -97,6 +99,8 @@ void decorateMenu(char *);
 void printMenu(int, int);
 int getMenuRows(void);
 int getMenuCols(void);
+void createConfig(char *);
+int fileExists(char *);
 
 /***************************************************
  * Main function
@@ -235,13 +239,16 @@ int loadMenuConfig(char *config) {
 		strcpy(menuConfigPath, homeDir);
 		strcat(menuConfigPath, "/");
 		strcat(menuConfigPath, config);
+
+                if (!fileExists(config))
+                    createConfig(menuConfigPath);
 	} else {
 		strcpy(menuConfigPath, config);
 	}
 
 	FILE *menuConfig;
 	if ((menuConfig = fopen(menuConfigPath, "r")) == NULL) {
-		return 2;
+            return 2;
 	}
 
 	_Bool menuOn = 1, commandOn = 0;
@@ -289,6 +296,16 @@ int loadMenuConfig(char *config) {
 	fclose(menuConfig);
 
 	return 0;
+}
+
+void createConfig(char *menuDefaultPath) {
+    FILE *menu = fopen(menuDefaultPath, "w");
+    if (menu == NULL) 
+        return; // We will return an error to main in loadMenuConfig()
+    fprintf(menu, "Clear Screen:/usr/bin/clear\n");
+    fprintf(menu, "Dir Listing:/usr/bin/ls -l");
+    
+    fclose(menu);
 }
 
 /*************************************************
@@ -527,4 +544,10 @@ int getMenuCols(void) {
 				maxCols = cols;
 
 	return maxCols + 1;
+}
+
+int fileExists(char *filename)
+{
+    struct stat buffer;   
+    return (stat (filename, &buffer) == 0);
 }
