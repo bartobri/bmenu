@@ -228,21 +228,18 @@ int loadMenuConfig(char *config) {
 
 		char *homeDir = getenv("HOME");;
 
-		if (homeDir == NULL) {
+		if (homeDir == NULL)
 			return 1;
-		}
 
 		strcpy(menuConfigPath, homeDir);
 		strcat(menuConfigPath, "/");
 		strcat(menuConfigPath, config);
-	} else {
+	} else
 		strcpy(menuConfigPath, config);
-	}
 
 	FILE *menuConfig;
-	if ((menuConfig = fopen(menuConfigPath, "r")) == NULL) {
+	if ((menuConfig = fopen(menuConfigPath, "r")) == NULL)
 		return 2;
-	}
 
 	_Bool menuOn = 1, commandOn = 0;
 	int l = 0, i = 0, c;
