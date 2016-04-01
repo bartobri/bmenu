@@ -12,7 +12,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <termios.h>         // Support for character input
-#include <unistd.h>          // execl()
+#include <unistd.h>          // execl(), getopt()
 
 #define VERSION              "0.1.0"
 
@@ -111,18 +111,20 @@ int fileExists(char *);
 int main (int argc, char *argv[]) {
 	char *menuTitle = MENU_TITLE;
 	char *configFile = MENU_CONFIG;
-	int i, row, col;
+	int c, row, col;
 
-	// Process command arguments
-	for (i = 1; i < argc; ++i) {
-
-		// -t option: set menu title
-		if (strcmp(argv[i], "-t") == 0 && i + 1 < argc)
-			menuTitle = argv[i + 1];
-
-		// -c option: config file path
-		if (strcmp(argv[i], "-c") == 0 && i + 1 < argc)
-			configFile = argv[i + 1];
+	// Processing command arguments
+	while ((c = getopt(argc, argv, "t:c:")) != -1) {
+		switch (c) {
+			case 't':
+				printf("-t option is %s\n", optarg);
+				menuTitle = optarg;
+				break;
+			case 'c':
+				printf("-c option is %s\n", optarg);
+				configFile = optarg;
+				break;
+		}
 	}
 
 	// Initialize menu and command arrays
