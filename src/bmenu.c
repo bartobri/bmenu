@@ -386,8 +386,8 @@ void decorateMenu(char *title) {
 		borderCols = 25;
 
 	// Determining starting row and column for border (inner)
-	startCol = ((windowCols / 2) - (borderCols / 2));
-	startRow = ((windowRows / 2) - (borderRows / 2));
+	startCol = (windowCols / 2) - (borderCols / 2);
+	startRow = (windowRows / 2) - (borderRows / 2);
 	if (startCol < 0)
 		startCol = 0;
 	if (startRow < 0)
