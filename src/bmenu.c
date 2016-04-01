@@ -143,6 +143,9 @@ int main (int argc, char *argv[]) {
 	} else if (result == 2) {
 		fprintf(stderr, "Could not open config file: %s\n", configFile);
 		return result;
+	} else if (result == 3) {
+		fprintf(stderr, "Memory allocation error. Could not open config file: %s\n", configFile);
+		return result;
 	}
 
 	// Get terminal window size
@@ -244,14 +247,19 @@ int main (int argc, char *argv[]) {
  * char *config- Config file path
  ***************************************************/
 int loadMenuConfig(char *config) {
-	char menuConfigPath[200];
+	char *menuConfigPath;
 
 	if (strcmp(config, MENU_CONFIG) == 0) {
 
-		char *homeDir = getenv("HOME");;
+		char *homeDir = getenv("HOME");
 
 		if (homeDir == NULL)
 			return 1;
+
+		menuConfigPath = (char *) malloc(strlen(homeDir) + strlen(config) + 2);
+
+		if (menuConfigPath == NULL)
+			return 3;
 
 		strcpy(menuConfigPath, homeDir);
 		strcat(menuConfigPath, "/");
@@ -259,8 +267,14 @@ int loadMenuConfig(char *config) {
 
 		if (!fileExists(menuConfigPath))
 			createConfig(menuConfigPath);
-	} else
+	} else {
+		menuConfigPath = (char *) malloc(strlen(config) + 1);
+
+		if (menuConfigPath == NULL)
+			return 3;
+
 		strcpy(menuConfigPath, config);
+	}
 
 	FILE *menuConfig;
 	if ((menuConfig = fopen(menuConfigPath, "r")) == NULL)
