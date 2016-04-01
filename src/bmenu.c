@@ -13,6 +13,7 @@
 #include <sys/stat.h>
 #include <termios.h>         // Support for character input
 #include <unistd.h>          // execl(), getopt()
+#include <stdbool.h>         // bool, true, false
 
 #define VERSION              "0.1.0"
 
@@ -280,26 +281,26 @@ int loadMenuConfig(char *config) {
 	if ((menuConfig = fopen(menuConfigPath, "r")) == NULL)
 		return 2;
 
-	_Bool menuOn = 1, commandOn = 0;
+	bool menuOn = true, commandOn = false;
 	int l = 0, i = 0, c;
 	while((c = getc(menuConfig)) != EOF) {
 		if (menuOn && i == MAX_MENU_CHAR - 1) {
-			menuOn = 0;
+			menuOn = false;
 			continue;
 		}
 		if (commandOn && i == MAX_COMMAND_CHAR - 1) {
-			commandOn = 0;
+			commandOn = false;
 			continue;
 		}
 			
 		if (c == ':') {
-			commandOn = 1;
-			menuOn = 0;
+			commandOn = true;
+			menuOn = false;
 			i = 0;
 			continue;
 		} else if (c == '\n') {
-			menuOn = 1;
-			commandOn = 0;
+			menuOn = true;
+			commandOn = false;
 			i = 0;
 			++l;
 			if (l > MAX_MENU_OPTIONS - 1)
