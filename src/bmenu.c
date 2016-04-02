@@ -281,6 +281,8 @@ int loadMenuConfig(char *config) {
 	if ((menuConfig = fopen(menuConfigPath, "r")) == NULL)
 		return 2;
 
+	free(menuConfigPath);
+
 	bool menuOn = true, commandOn = false;
 	int l = 0, i = 0, c;
 	while((c = getc(menuConfig)) != EOF) {
