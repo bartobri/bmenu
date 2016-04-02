@@ -277,11 +277,12 @@ int loadMenuConfig(char *config) {
 		strcpy(menuConfigPath, config);
 	}
 
-	FILE *menuConfig;
-	if ((menuConfig = fopen(menuConfigPath, "r")) == NULL)
-		return 2;
+	FILE *menuConfig = fopen(menuConfigPath, "r");
 
 	free(menuConfigPath);
+
+	if (menuConfig == NULL)
+		return 2;
 
 	bool menuOn = true, commandOn = false;
 	int l = 0, i = 0, c;
