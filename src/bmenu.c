@@ -257,7 +257,7 @@ int loadMenuConfig(char *config) {
 		if (homeDir == NULL)
 			return 1;
 
-		menuConfigPath = (char *) malloc(strlen(homeDir) + strlen(config) + 2);
+		menuConfigPath = malloc(strlen(homeDir) + strlen(config) + 2);
 
 		if (menuConfigPath == NULL)
 			return 3;
@@ -269,7 +269,7 @@ int loadMenuConfig(char *config) {
 		if (!fileExists(menuConfigPath))
 			createConfig(menuConfigPath);
 	} else {
-		menuConfigPath = (char *) malloc(strlen(config) + 1);
+		menuConfigPath = malloc(strlen(config) + 1);
 
 		if (menuConfigPath == NULL)
 			return 3;
