@@ -116,11 +116,9 @@ int main (int argc, char *argv[]) {
 	while ((c = getopt(argc, argv, "t:c:")) != -1) {
 		switch (c) {
 			case 't':
-				printf("-t option is %s\n", optarg);
 				menuTitle = optarg;
 				break;
 			case 'c':
-				printf("-c option is %s\n", optarg);
 				configFile = optarg;
 				break;
 		}
