@@ -90,8 +90,8 @@
 
 // Global Vars
 int windowRows, windowCols;
-char menu[MAX_MENU_OPTIONS][MAX_MENU_CHAR];
-char command[MAX_MENU_OPTIONS][MAX_COMMAND_CHAR];
+char *menu[MAX_MENU_OPTIONS] = {0};
+char *command[MAX_MENU_OPTIONS] = {0};
 
 // Function prototypes
 int loadMenuConfig(char *);
@@ -126,14 +126,6 @@ int main (int argc, char *argv[]) {
 				configFile = optarg;
 				break;
 		}
-	}
-
-	// Initialize menu and command arrays
-	for (row = 0; row < MAX_MENU_OPTIONS; ++row) {
-		for (col = 0; col < MAX_MENU_CHAR; ++col)
-			menu[row][col] = '\0';
-		for (col = 0; col < MAX_COMMAND_CHAR; ++col)
-			command[row][col] = '\0';
 	}
 
 	// Getting menu config
@@ -235,6 +227,10 @@ int main (int argc, char *argv[]) {
 	if (menuFootOption == 1)
 		execl("/bin/sh", "/bin/sh", "-c", command[menuListOption - 1], NULL);
 
+	// Freeing memory used for menu[]
+	for (row = 0; menu[row]; ++row)
+		free(menu[row]);
+
 	return 0;
 }
 
@@ -250,6 +246,9 @@ int main (int argc, char *argv[]) {
 int loadMenuConfig(char *config) {
 	char *menuConfigPath;
 
+	// Lets get the config file path. If it is the same as MENU_CONFIG (i.e. default)
+	// then we need to build the full path from the $HOME env variable. Otherwise,
+	// the full path should already be provided.
 	if (strcmp(config, MENU_CONFIG) == 0) {
 
 		char *homeDir = getenv("HOME");
@@ -277,55 +276,27 @@ int loadMenuConfig(char *config) {
 		strcpy(menuConfigPath, config);
 	}
 
+	// Open file
 	FILE *menuConfig = fopen(menuConfigPath, "r");
 
+	// Free memory previously allocated for file path
 	free(menuConfigPath);
 
+	// If there was an issue opening the file, return to main()
 	if (menuConfig == NULL)
 		return 2;
 
-	bool menuOn = true, commandOn = false;
-	int l = 0, i = 0, c;
-	while((c = getc(menuConfig)) != EOF) {
-		if (menuOn && i == MAX_MENU_CHAR - 1) {
-			menuOn = false;
-			continue;
-		}
-		if (commandOn && i == MAX_COMMAND_CHAR - 1) {
-			commandOn = false;
-			continue;
-		}
-			
-		if (c == ':') {
-			commandOn = true;
-			menuOn = false;
-			i = 0;
-			continue;
-		} else if (c == '\n') {
-			menuOn = true;
-			commandOn = false;
-			i = 0;
-			++l;
-			if (l > MAX_MENU_OPTIONS - 1)
-				break;
-			else {
-				menu[l][0] = '\0';
-				command[l][0] = '\0';
-			}
-			continue;
-		}
-
-		if (menuOn) {
-			menu[l][i] = c;
-			menu[l][i+1] = '\0';
-		} else if (commandOn) {
-			command[l][i] = c;
-			command[l][i+1] = '\0';
-		}
-
-		++i;
+	// Looping over the file, reading in menu and command items
+	int l = 0;
+	char *confline = NULL;
+	size_t linelen = 0;
+	while(getline(&confline, &linelen, menuConfig)!=-1) {
+		menu[l] = strtok(confline, ":");
+		command[l] = strtok(NULL, "\n");
+		l++;
+		confline = NULL;
 	}
-	
+
 	fclose(menuConfig);
 
 	return 0;
@@ -518,19 +489,16 @@ void printMenu(int lo, int fo) {
 		// highlighting current selection text
 		printf( (row == lo - 1) ? KMAG_BOLD : KNRM KCYN );
 
-		for (col = 0; menu[row][col] != '\0'; ++col) {
+		// Printing selection marker if on selected row, and removing any previous
+		// marker if not.
+		if (row == lo - 1) {
+			char c[] = POINTER_RIGHT;
+			printf("\033[%i;%iH%s", row + startRow, startCol - 2, c);
+		} else
+			printf("\033[%i;%iH%c", row + startRow, startCol - 2, SPACE);
 
-			// Printing selection marker if on selected row, and removing any previous
-			// marker if not.
-			if (row == lo - 1 && col == 0) {
-				char c[] = POINTER_RIGHT;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol - 2, c);
-			} else if (col == 0)
-				printf("\033[%i;%iH%c", row + startRow, col + startCol - 2, SPACE);
-
-			// printing menu text
-			printf("\033[%i;%iH%c", row + startRow, col + startCol, menu[row][col]);
-		}
+		// printing menu text
+		printf("\033[%i;%iH%s", row + startRow, startCol, menu[row]);
 
 		// printing menu foot options (select/exit)
 		if (row == menuRows - 1) {
@@ -559,7 +527,7 @@ void printMenu(int lo, int fo) {
 int getMenuRows(void) {
 	int rows;
 
-	for (rows = 0; menu[rows][0] != '\0' && rows < MAX_MENU_OPTIONS; ++rows)
+	for (rows = 0; menu[rows] && rows < MAX_MENU_OPTIONS; ++rows)
 		;
 
 	return rows;
@@ -577,15 +545,16 @@ int getMenuRows(void) {
  * int - Number of characters in longest option
  *************************************************/
 int getMenuCols(void) {
-	int maxCols = 0;
 	int rows, cols;
+	int longest = 0;
 
-	for (rows = 0; menu[rows][0] != '\0' && rows < MAX_MENU_OPTIONS; ++rows)
-		for (cols = 1; menu[rows][cols] != '\0' && cols < MAX_MENU_CHAR; ++cols)
-			if (maxCols < cols)
-				maxCols = cols;
+	for (rows = 0; menu[rows] && rows < MAX_MENU_OPTIONS; ++rows) {
+		cols = strlen(menu[rows]);
+		if (longest < cols)
+			longest = cols;
+	}
 
-	return maxCols + 1;
+	return longest;
 }
 
 /*************************************************
