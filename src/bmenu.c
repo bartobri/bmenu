@@ -21,8 +21,6 @@
 #define MENU_CONFIG          ".bmenu"
 
 #define MAX_MENU_OPTIONS     10
-#define MAX_MENU_CHAR        50
-#define MAX_COMMAND_CHAR     100
 
 #define SPACE                040
 #define NEWLINE              012
