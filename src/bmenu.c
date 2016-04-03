@@ -475,7 +475,7 @@ void decorateMenu(char *title) {
  * int fo - Foot Option (currently selected)
  *************************************************/
 void printMenu(int lo, int fo) {
-	int row, col, startRow, startCol;
+	int row, startRow, startCol;
 	int menuRows = getMenuRows();
 	int menuCols = getMenuCols();
 
