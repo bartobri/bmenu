@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>           // isspace()
 #include <stdlib.h>          // getenv()
 #include <sys/ioctl.h>       // Support for terminal dimentions
 #include <sys/types.h>
@@ -134,6 +135,9 @@ int main (int argc, char *argv[]) {
 		return result;
 	} else if (result == 3) {
 		fprintf(stderr, "Memory allocation error. Could not open config file: %s\n", configFile);
+		return result;
+	} else if (result == 4) {
+		fprintf(stderr, "Invalid line format detected in config file: %s.\n", configFile);
 		return result;
 	}
 
@@ -286,9 +290,25 @@ int loadMenuConfig(char *config) {
 	int l = 0;
 	char *confline = NULL;
 	size_t linelen = 0;
-	while(getline(&confline, &linelen, menuConfig)!=-1) {
+	while(getline(&confline, &linelen, menuConfig) != -1) {
+
+		// Skipping empty lines
+		int i;
+		for (i = 0; isspace(confline[i]); ++i)
+			;
+		if (i == strlen(confline))
+			continue;
+
+		// Parsing confline
 		menu[l] = strtok(confline, ":");
 		command[l] = strtok(NULL, "\n");
+
+		// If command[l] is NULL then the line is not formatted correctly.
+		// Return to caller with appropriate value.
+		if (command[l] == NULL) {
+			return 4;
+		}
+
 		l++;
 		confline = NULL;
 	}
