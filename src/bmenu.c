@@ -300,7 +300,8 @@ int loadMenuConfig(char *config) {
 			continue;
 
 		// Parsing confline
-		menu[l] = strtok(confline, ":");
+		menu[l] = confline;
+		strtok(confline, ":");
 		command[l] = strtok(NULL, "\n");
 
 		// If command[l] is NULL then the line is not formatted correctly.
