@@ -304,8 +304,14 @@ int loadMenuConfig(char *config) {
 		command[l] = strtok(NULL, "\n");
 
 		// If command[l] is NULL then the line is not formatted correctly.
-		// Return to caller with appropriate value.
+		// Free menu[] and return to caller with appropriate value.
 		if (command[l] == NULL) {
+
+			// Freeing memory used for menu[]
+			int row;
+			for (row = 0; menu[row]; ++row)
+				free(menu[row]);
+
 			return 4;
 		}
 
