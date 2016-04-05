@@ -322,6 +322,11 @@ int loadMenuConfig(char *config) {
 		confline = NULL;
 	}
 
+	// Need to free confline in case the last line of the config file was blank
+	// resulting in a dangling confline buffer.
+	free(confline);
+
+	// Let's close the file handle.
 	fclose(menuConfig);
 
 	return 0;
