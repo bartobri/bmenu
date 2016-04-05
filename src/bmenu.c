@@ -312,6 +312,9 @@ int loadMenuConfig(char *config) {
 			for (row = 0; menu[row]; ++row)
 				free(menu[row]);
 
+			// Close the open file handle
+			fclose(menuConfig);
+
 			return 4;
 		}
 
