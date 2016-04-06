@@ -225,8 +225,9 @@ int main (int argc, char *argv[]) {
 		execl("/bin/sh", "/bin/sh", "-c", command[menuListOption - 1], NULL);
 
 	// Freeing memory used for menu[]
-	for (row = 0; menu[row]; ++row)
-		free(menu[row]);
+	row = 0;
+	while (menu[row])
+		free(menu[row++]);
 
 	return 0;
 }
@@ -292,9 +293,9 @@ int loadMenuConfig(char **menu, char **command, char *config) {
 	while(getline(&confline, &linelen, menuConfig) != -1) {
 
 		// Skipping empty lines
-		int i;
-		for (i = 0; isspace(confline[i]); ++i)
-			;
+		int i = 0;
+		while (isspace(confline[i]))
+			++i;
 		if (i == strlen(confline))
 			continue;
 
@@ -308,9 +309,9 @@ int loadMenuConfig(char **menu, char **command, char *config) {
 		if (command[l] == NULL) {
 
 			// Freeing memory used for menu[]
-			int row;
-			for (row = 0; menu[row]; ++row)
-				free(menu[row]);
+			int row = 0;
+			while (menu[row])
+				free(menu[row++]);
 
 			// Close the open file handle
 			fclose(menuConfig);
