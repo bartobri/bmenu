@@ -87,18 +87,13 @@
 #define KCYN_BOLD            "\x1B[36;1m"
 #define KWHT                 "\x1B[37m"
 
-// Global Vars
-int windowRows, windowCols;
-char *menu[MAX_MENU_OPTIONS] = {0};
-char *command[MAX_MENU_OPTIONS] = {0};
-
 // Function prototypes
-int loadMenuConfig(char *);
-void windowHeader(void);
-void decorateMenu(char *);
-void printMenu(int, int);
-int getMenuRows(void);
-int getMenuCols(void);
+int loadMenuConfig(char **, char **, char *);
+void windowHeader(int);
+void decorateMenu(char **, char *, int, int);
+void printMenu(char **, int, int, int, int);
+int getMenuRows(char **);
+int getMenuCols(char **);
 void createConfig(char *);
 int fileExists(char *);
 
@@ -109,9 +104,11 @@ int fileExists(char *);
  * more info.
  ***************************************************/
 int main (int argc, char *argv[]) {
-	char *menuTitle = MENU_TITLE;
-	char *configFile = MENU_CONFIG;
-	int c, row, col;
+	int c, row, col, windowRows, windowCols;
+	char *menu[MAX_MENU_OPTIONS]               = {0};
+	char *command[MAX_MENU_OPTIONS]            = {0};
+	char *menuTitle                            = MENU_TITLE;
+	char *configFile                           = MENU_CONFIG;
 
 	// Processing command arguments
 	while ((c = getopt(argc, argv, "t:c:")) != -1) {
@@ -126,7 +123,7 @@ int main (int argc, char *argv[]) {
 	}
 
 	// Getting menu config
-	int result = loadMenuConfig(configFile);
+	int result = loadMenuConfig(menu, command, configFile);
 	if (result == 1) {
 		fprintf(stderr, "Please set HOME environment variable.\n");
 		return result;
@@ -142,7 +139,7 @@ int main (int argc, char *argv[]) {
 	}
 
 	// Get terminal window size
-	struct winsize w;                                                                                         
+	struct winsize w;
 	ioctl(0, TIOCGWINSZ, &w);
 	windowRows =  w.ws_row;
 	windowCols = w.ws_col;
@@ -155,10 +152,10 @@ int main (int argc, char *argv[]) {
 	}
 
 	// Print window header
-	windowHeader();
+	windowHeader(windowCols);
 
 	// Menu title and borders
-	decorateMenu(menuTitle);
+	decorateMenu(menu, menuTitle, windowRows, windowCols);
 
 	// Setting terminal input mode to turn off echo and buffering
 	static struct termios oldt, newt;
@@ -170,7 +167,7 @@ int main (int argc, char *argv[]) {
 	// Menu loop
 	int menuListOption = 1, menuFootOption = 1;
 	int input = 0;
-	int menuRows = getMenuRows();
+	int menuRows = getMenuRows(menu);
 	do {
 		// Check input
 		switch(input) {
@@ -203,7 +200,7 @@ int main (int argc, char *argv[]) {
 		}
 
 		// Print menu with the current selection highlighted
-		printMenu(menuListOption, menuFootOption);
+		printMenu(menu, menuListOption, menuFootOption, windowRows, windowCols);
 
 		// Position cursor at the bottom of the terminal window
 		printf(KNRM);
@@ -234,16 +231,18 @@ int main (int argc, char *argv[]) {
 	return 0;
 }
 
-/***************************************************
+/******************************************************
  * loadMenuConfig()
  *
  * Loading the menu config file. Return a non-zero
  * result if anything goes wrong.
  *
  * Args:
- * char *config- Config file path
- ***************************************************/
-int loadMenuConfig(char *config) {
+ * char **menu - array of pointers to menu strings
+ * char **command - array of pointers to command strings
+ * char *config - Config file path
+ ******************************************************/
+int loadMenuConfig(char **menu, char **command, char *config) {
 	char *menuConfigPath;
 
 	// Lets get the config file path. If it is the same as MENU_CONFIG (i.e. default)
@@ -344,20 +343,26 @@ int loadMenuConfig(char *config) {
 void createConfig(char *menuDefaultPath) {
 	FILE *menu = fopen(menuDefaultPath, "w");
 
+	// Return if we can't open the file. loadMenuConfig will
+	// ultimately return an error code to main which will
+	// terminate the program with an error message.
 	if (menu == NULL) 
-		return;       // We will return an error to main in loadMenuConfig()
+		return;
 
 	fprintf(menu, "Clear Screen:/usr/bin/clear\n");
 	fprintf(menu, "Dir Listing:/usr/bin/ls -l");
 	fclose(menu);
 }
 
-/*************************************************
+/****************************************************
  * windowHeader()
  *
  * Prints the window header (title and crossbar).
- *************************************************/
-void windowHeader(void) {
+ *
+ * Args:
+ * int windowCols - number of cols in terminal window
+ ****************************************************/
+void windowHeader(int windowCols) {
 	int col, textRow = 1, barRow = 2;
 
 	printf(KCYN_BOLD);
@@ -369,21 +374,24 @@ void windowHeader(void) {
 	}
 }
 
-/*************************************************
+/****************************************************
  * decorateMenu()
  *
  * Prints the inner and outer borders for the menu.
  *
  * Args:
+ * char **menu - array of pointers to menu strings
  * char *title - Menu title
- *************************************************/
-void decorateMenu(char *title) {
+ * int windowRows - number of rows in terminal window
+ * int windowCols - number of cols in terminal window
+ ****************************************************/
+void decorateMenu(char **menu, char *title, int windowRows, int windowCols) {
 	int borderCols, borderRows, startRow, startCol;
 	int row, col;
 
 	// Border size (inner)
-	borderCols = getMenuCols() + 8;
-	borderRows = getMenuRows() + 4;
+	borderCols = getMenuCols(menu) + 8;
+	borderRows = getMenuRows(menu) + 4;
 
 	// Minimum border width is 25 cols.
 	// Need at least this much for select/exit options.
@@ -494,7 +502,7 @@ void decorateMenu(char *title) {
 	
 }
 
-/*************************************************
+/****************************************************
  * printMenu()
  *
  * Prints the menu options list and the select/exit
@@ -502,13 +510,16 @@ void decorateMenu(char *title) {
  * options. 
  * 
  * Args:
+ * char **menu - array of pointers to menu strings
  * int lo - List Option (currently selected)
  * int fo - Foot Option (currently selected)
- *************************************************/
-void printMenu(int lo, int fo) {
+ * int windowRows - number of rows in terminal window
+ * int windowCols - number of cols in terminal window
+ ****************************************************/
+void printMenu(char **menu, int lo, int fo, int windowRows, int windowCols) {
 	int row, startRow, startCol;
-	int menuRows = getMenuRows();
-	int menuCols = getMenuCols();
+	int menuRows = getMenuRows(menu);
+	int menuCols = getMenuCols(menu);
 
 	// Determining starting row and column for menu
 	startCol = ((windowCols / 2) - (menuCols / 2)) > 0 ? ((windowCols / 2) - (menuCols / 2)) : 0;
@@ -548,14 +559,17 @@ void printMenu(int lo, int fo) {
  * getMenuRows()
  *
  * Gets the number of menu options (i.e. rows)
- * from the global menu[][] array. This defines
+ * from the global menu[] array. This defines
  * the height of the menu, and is needed for
  * centering and drawing borders.
+ *
+ * Args:
+ * char **menu - array of pointers to menu strings
  *
  * Return:
  * int - Number of menu rows
  *************************************************/
-int getMenuRows(void) {
+int getMenuRows(char **menu) {
 	int rows;
 
 	for (rows = 0; menu[rows] && rows < MAX_MENU_OPTIONS; ++rows)
@@ -568,14 +582,17 @@ int getMenuRows(void) {
  * getMenuCols()
  *
  * Gets the number of characters (i.e. cols) in
- * the longest menu option from the global menu[][]
+ * the longest menu option from the global menu[]
  * array. This defines the width of the menu, and
  * is needed for centering and drawing borders.
+ *
+ * Args:
+ * char **menu - array of pointers to menu strings
  *
  * Return:
  * int - Number of characters in longest option
  *************************************************/
-int getMenuCols(void) {
+int getMenuCols(char **menu) {
 	int rows, cols;
 	int longest = 0;
 
