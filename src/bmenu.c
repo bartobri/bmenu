@@ -23,9 +23,9 @@
 
 #define MAX_MENU_OPTIONS     10
 
-#define SPACE                040
-#define NEWLINE              012
-#define ENTER                012
+#define SPACE                ' '
+#define NEWLINE              '\n'
+#define ENTER                '\n'
 
 // Hex codes for box chars according to:
 // http://www.utf8-chartable.de/unicode-utf8-table.pl?start=9472&unicodeinhtml=dec
