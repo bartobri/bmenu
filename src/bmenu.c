@@ -222,7 +222,7 @@ int main (int argc, char *argv[]) {
 
 	// Execute chosen command
 	if (menuFootOption == 1)
-		execl("/bin/sh", "/bin/sh", "-c", command[menuListOption - 1], NULL);
+		execl("/bin/sh", "/bin/sh", "-c", command[menuListOption - 1], (char *) NULL);
 
 	// Freeing memory used for menu[]
 	row = 0;
