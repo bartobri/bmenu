@@ -6,13 +6,13 @@
 // any later version.  See COPYING for more details.
 
 #include <stdio.h>
+// #define NCURSES_WIDECHAR 1
+#include <ncurses.h>
 #include <string.h>
 #include <ctype.h>           // isspace()
 #include <stdlib.h>          // getenv()
-#include <sys/ioctl.h>       // Support for terminal dimentions
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <termios.h>         // Support for character input
 #include <unistd.h>          // execl(), getopt()
 #include <stdbool.h>         // bool, true, false
 
@@ -26,66 +26,6 @@
 #define SPACE                ' '
 #define NEWLINE              '\n'
 #define ENTER                '\n'
-
-// Hex codes for box chars according to:
-// http://www.utf8-chartable.de/unicode-utf8-table.pl?start=9472&unicodeinhtml=dec
-#define BOX_LINE_HORIZONTAL          {0xe2, 0x94, 0x80, '\0'}
-#define BOX_LINE_HORIZONTAL_H        {0xe2, 0x94, 0x81, '\0'}
-#define BOX_LINE_HORIZONTAL_D        {0xe2, 0x95, 0x90, '\0'}
-#define BOX_LINE_VERTICAL            {0xe2, 0x94, 0x82, '\0'}
-#define BOX_LINE_VERTICAL_H          {0xe2, 0x94, 0x83, '\0'}
-#define BOX_LINE_VERTICAL_D          {0xe2, 0x95, 0x91, '\0'}
-#define BOX_CORNER_LEFTTOP           {0xe2, 0x94, 0x8c, '\0'}
-#define BOX_CORNER_LEFTTOP_H         {0xe2, 0x94, 0x8f, '\0'}
-#define BOX_CORNER_LEFTTOP_D         {0xe2, 0x95, 0x94, '\0'}
-#define BOX_CORNER_RIGHTTOP          {0xe2, 0x94, 0x90, '\0'}
-#define BOX_CORNER_RIGHTTOP_HL       {0xe2, 0x94, 0x91, '\0'}
-#define BOX_CORNER_RIGHTTOP_DL       {0xe2, 0x95, 0x95, '\0'}
-#define BOX_CORNER_RIGHTTOP_HD       {0xe2, 0x94, 0x92, '\0'}
-#define BOX_CORNER_RIGHTTOP_DD       {0xe2, 0x95, 0x96, '\0'}
-#define BOX_CORNER_RIGHTTOP_H        {0xe2, 0x94, 0x93, '\0'}
-#define BOX_CORNER_RIGHTTOP_D        {0xe2, 0x95, 0x97, '\0'}
-#define BOX_CORNER_LEFTBOTTOM        {0xe2, 0x94, 0x94, '\0'}
-#define BOX_CORNER_LEFTBOTTOM_HR     {0xe2, 0x94, 0x95, '\0'}
-#define BOX_CORNER_LEFTBOTTOM_DR     {0xe2, 0x95, 0x98, '\0'}
-#define BOX_CORNER_LEFTBOTTOM_HU     {0xe2, 0x94, 0x96, '\0'}
-#define BOX_CORNER_LEFTBOTTOM_DU     {0xe2, 0x95, 0x99, '\0'}
-#define BOX_CORNER_LEFTBOTTOM_H      {0xe2, 0x94, 0x97, '\0'}
-#define BOX_CORNER_LEFTBOTTOM_D      {0xe2, 0x95, 0x9a, '\0'}
-#define BOX_CORNER_RIGHTBOTTOM       {0xe2, 0x94, 0x98, '\0'}
-#define BOX_CORNER_RIGHTBOTTOM_H     {0xe2, 0x94, 0x9b, '\0'}
-#define BOX_CORNER_RIGHTBOTTOM_D     {0xe2, 0x95, 0x9d, '\0'}
-#define BOX_CROSS_LEFT               {0xe2, 0x94, 0x9c, '\0'}
-#define BOX_CROSS_LEFT_HD            {0xe2, 0x94, 0xa0, '\0'}
-#define BOX_CROSS_LEFT_DD            {0xe2, 0x95, 0x9f, '\0'}
-#define BOX_CROSS_LEFT_H             {0xe2, 0x94, 0xa3, '\0'}
-#define BOX_CROSS_LEFT_D             {0xe2, 0x95, 0xa0, '\0'}
-#define BOX_CROSS_RIGHT              {0xe2, 0x94, 0xa4, '\0'}
-#define BOX_CROSS_RIGHT_H            {0xe2, 0x94, 0xab, '\0'}
-#define BOX_CROSS_RIGHT_D            {0xe2, 0x95, 0xa3, '\0'}
-#define BOX_CROSS_TOP                {0xe2, 0x94, 0xac, '\0'}
-#define BOX_CROSS_TOP_H              {0xe2, 0x94, 0xb3, '\0'}
-#define BOX_CROSS_TOP_D              {0xe2, 0x95, 0xa6, '\0'}
-#define BOX_CROSS_BOTTOM             {0xe2, 0x94, 0xb4, '\0'}
-#define BOX_CROSS_BOTTOM_H           {0xe2, 0x94, 0xbb, '\0'}
-#define BOX_CROSS_BOTTOM_D           {0xe2, 0x95, 0xa9, '\0'}
-#define BOX_CROSS_MIDDLE             {0xe2, 0x94, 0xbc, '\0'}
-#define BOX_CROSS_MIDDLE_H           {0xe2, 0x94, 0x8b, '\0'}
-#define BOX_CROSS_MIDDLE_D           {0xe2, 0x95, 0xac, '\0'}
-#define SHADE_MEDIUM                 {0xe2, 0x96, 0x92, '\0'}
-#define POINTER_RIGHT                {0xe2, 0x96, 0xb6, '\0'}
-
-// Text colors
-#define KNRM                 "\x1B[0m"
-#define KRED                 "\x1B[31m"
-#define KGRN                 "\x1B[32m"
-#define KYEL                 "\x1B[33m"
-#define KBLU                 "\x1B[34m"
-#define KMAG                 "\x1B[35m"
-#define KMAG_BOLD            "\x1B[35;1m"
-#define KCYN                 "\x1B[36m"
-#define KCYN_BOLD            "\x1B[36;1m"
-#define KWHT                 "\x1B[37m"
 
 // Function prototypes
 int loadMenuConfig(char **, char **, char *);
@@ -138,31 +78,28 @@ int main (int argc, char *argv[]) {
 		return result;
 	}
 
-	// Get terminal window size
-	struct winsize w;
-	ioctl(0, TIOCGWINSZ, &w);
-	windowRows =  w.ws_row;
-	windowCols = w.ws_col;
+	// Start and initialize curses mode
+	initscr();
+	cbreak();
+	keypad(stdscr, TRUE);
+	noecho();
 
-	// initializing terminal window with all spaces
-	for (row = 1; row <= windowRows; ++row) {
-		for (col = 1; col <= windowCols; ++col)
-			printf("\033[%i;%iH%c", row, col, SPACE);
-		printf("\033[%i;%iH%c", row, col, NEWLINE);
+	// Setting up and starting colors if terminal supports them
+	if (has_colors()) {
+		start_color();
+		init_pair(1, COLOR_CYAN, COLOR_BLACK);
+		init_pair(2, COLOR_MAGENTA, COLOR_BLACK);
+		attron(COLOR_PAIR(1));
 	}
+
+	// Get terminal window size
+	getmaxyx(stdscr, windowRows, windowCols);
 
 	// Print window header
 	windowHeader(windowCols);
 
 	// Menu title and borders
 	decorateMenu(menu, menuTitle, windowRows, windowCols);
-
-	// Setting terminal input mode to turn off echo and buffering
-	static struct termios oldt, newt;
-	tcgetattr( STDIN_FILENO, &oldt);            // get terminal parameters, store in oldt
-	newt = oldt;                                // copy settings to newt
-	newt.c_lflag &= ~(ICANON | ECHO);           // unset ICANON and ECHO
-	tcsetattr( STDIN_FILENO, TCSANOW, &newt);   // run new terminal settings
 
 	// Menu loop
 	int menuListOption = 1, menuFootOption = 1;
@@ -171,17 +108,19 @@ int main (int argc, char *argv[]) {
 	do {
 		// Check input
 		switch(input) {
-			case 27:
-				input = getchar();
-				input = getchar();
-				if (input == 65 && menuListOption > 1)
+			case KEY_UP:
+				if (menuListOption > 1)
 					--menuListOption;
-				else if (input == 66 && menuListOption < menuRows)
+				break;
+			case KEY_DOWN:
+				if (menuListOption < menuRows)
 					++menuListOption;
-				else if (input == 68)
-					menuFootOption = 1;
-				else if (input == 67)
-					menuFootOption = 2;
+				break;
+			case KEY_RIGHT:
+				menuFootOption = 2;
+				break;
+			case KEY_LEFT:
+				menuFootOption = 1;
 				break;
 			case 106: // 106 == j
 				if (menuListOption < menuRows)
@@ -202,23 +141,13 @@ int main (int argc, char *argv[]) {
 		// Print menu with the current selection highlighted
 		printMenu(menu, menuListOption, menuFootOption, windowRows, windowCols);
 
-		// Position cursor at the bottom of the terminal window
-		printf(KNRM);
-		printf("\033[%i;%iH", windowRows, 1);
+		// Refresh window
+		refresh();
 
-	} while ((input = getchar()) != ENTER);
+	} while ((input = getch()) != ENTER);
 
-	// Restore terminal settings before exiting
-	tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
-
-	// Clear window and set cursor at the top
-	for (row = 1; row <= windowRows; ++row) {
-		for (col = 1; col <= windowCols; ++col)
-			printf("\033[%i;%iH%c", row, col, SPACE);
-		printf("\033[%i;%iH%c", row, col, NEWLINE);
-	}
-	printf("\033[%i;%iH", 1, 1);
-	fflush(stdout);
+	// End curses mode
+	endwin();
 
 	// Execute chosen command
 	if (menuFootOption == 1)
@@ -290,7 +219,7 @@ int loadMenuConfig(char **menu, char **command, char *config) {
 	int l = 0;
 	char *confline = NULL;
 	size_t linelen = 0;
-	while(getline(&confline, &linelen, menuConfig) != -1) {
+	while (getline(&confline, &linelen, menuConfig) != -1) {
 
 		// Skipping empty lines
 		int i = 0;
@@ -364,15 +293,14 @@ void createConfig(char *menuDefaultPath) {
  * int windowCols - number of cols in terminal window
  ****************************************************/
 void windowHeader(int windowCols) {
-	int col, textRow = 1, barRow = 2;
+	int col, textRow = 0, barRow = 1;
 
-	printf(KCYN_BOLD);
-	printf("\033[%i;%iH%s", textRow, 2, "B-MENU v" VERSION);
+	attron(A_BOLD);
+	mvprintw(textRow, 1, "%s", "B-MENU v" VERSION);
+	attroff(A_BOLD);
 
-	for (col = 1; col <= windowCols; ++col) {
-		char c[] = BOX_LINE_HORIZONTAL_D;
-		printf("\033[%i;%iH%s", barRow, col, c);
-	}
+	for (col = 0; col < windowCols; ++col)
+		mvaddch(barRow, col, ACS_HLINE);
 }
 
 /****************************************************
@@ -410,35 +338,27 @@ void decorateMenu(char **menu, char *title, int windowRows, int windowCols) {
 	// printing border (inner)
 	for (row = 0; row < borderRows; ++row)
 		for (col = 0; col < borderCols; ++col)
-			if (row == 0 && col == 0) {
-				char c[] = BOX_CORNER_LEFTTOP;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
-			} else if (row == 0 && col == borderCols - 1) {
-				char c[] = BOX_CORNER_RIGHTTOP_DD;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
-			} else if (row == 0) {
-				char c[] = BOX_LINE_HORIZONTAL;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
-			} else if (row == borderRows - 1 && col == 0) {
-				char c[] = BOX_CORNER_LEFTBOTTOM_DR;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
-			} else if (row == borderRows - 1 && col == borderCols - 1) {
-				char c[] = BOX_CORNER_RIGHTBOTTOM_D;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
-			} else if (row == borderRows - 1) {
-				char c[] = BOX_LINE_HORIZONTAL_D;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
-			} else if (col == 0) {
-				char c[] = BOX_LINE_VERTICAL;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
-			} else if (col == borderCols - 1) {
-				char c[] = BOX_LINE_VERTICAL_D;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
-			}
+			if (row == 0 && col == 0)
+				mvaddch(row + startRow, col + startCol, ACS_ULCORNER);
+			else if (row == 0 && col == borderCols - 1)
+				mvaddch(row + startRow, col + startCol, ACS_URCORNER);
+			else if (row == 0)
+				mvaddch(row + startRow, col + startCol, ACS_HLINE);
+			else if (row == borderRows - 1 && col == 0)
+				mvaddch(row + startRow, col + startCol, ACS_LLCORNER);
+			else if (row == borderRows - 1 && col == borderCols - 1)
+				mvaddch(row + startRow, col + startCol, ACS_LRCORNER);
+			else if (row == borderRows - 1)
+				mvaddch(row + startRow, col + startCol, ACS_HLINE);
+			else if (col == 0)
+				mvaddch(row + startRow, col + startCol, ACS_VLINE);
+			else if (col == borderCols - 1)
+				mvaddch(row + startRow, col + startCol, ACS_VLINE);
 
 	// Printing (inner) border title
-	printf(KCYN_BOLD);
-	printf("\033[%i;%iH%s", startRow - 1, startCol, title);
+	attron(A_BOLD);
+	mvprintw(startRow - 1, startCol, "%s", title);
+	attroff(A_BOLD);
 
 	// Border size (outer)
 	borderCols += 4;
@@ -459,46 +379,35 @@ void decorateMenu(char **menu, char *title, int windowRows, int windowCols) {
 	for (row = 0; row < borderRows; ++row)
 		for (col = 0; col < borderCols; ++col)
 			if (row == 0 && col == 0) {
-				char c[] = BOX_CORNER_LEFTTOP_D;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+				mvaddch(row + startRow, col + startCol, ACS_ULCORNER);
 			} else if (row == 0 && col == borderCols - 1) {
-				char c[] = BOX_CORNER_RIGHTTOP_DL;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+				mvaddch(row + startRow, col + startCol, ACS_URCORNER);
 			} else if (row == 0) {
-				char c[] = BOX_LINE_HORIZONTAL_D;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+				mvaddch(row + startRow, col + startCol, ACS_HLINE);
 			} else if (row == borderRows - 1 && col == 0) {
-				char c[] = BOX_CORNER_LEFTBOTTOM_DU;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+				mvaddch(row + startRow, col + startCol, ACS_LLCORNER);
 			} else if (row == borderRows - 1 && col == borderCols - 1) {
-				char c[] = BOX_CORNER_RIGHTBOTTOM;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
-				char c2[] = SHADE_MEDIUM;
-				printf("\033[%i;%iH%s", row + startRow + 1, col + startCol + 1, c2);
+				mvaddch(row + startRow, col + startCol, ACS_LRCORNER);
+				//char c2[] = SHADE_MEDIUM;
+				//mvprintw(row + startRow + 1, col + startCol + 1, "%s", c2);
 			} else if (row == borderRows - 1) {
-				char c[] = BOX_LINE_HORIZONTAL;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
-				char c2[] = SHADE_MEDIUM;
-				printf("\033[%i;%iH%s", row + startRow + 1, col + startCol + 1, c2);
+				mvaddch(row + startRow, col + startCol, ACS_HLINE);
+				//char c2[] = SHADE_MEDIUM;
+				//mvprintw(row + startRow + 1, col + startCol + 1, "%s", c2);
 			} else if (col == 0 && row == borderRows - 3) {
-				char c[] = BOX_CROSS_LEFT_DD;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+				mvaddch(row + startRow, col + startCol, ACS_LTEE);
 			} else if (col == borderCols - 1 && row == borderRows - 3) {
-				char c[] = BOX_CROSS_RIGHT;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
-				char c2[] = SHADE_MEDIUM;
-				printf("\033[%i;%iH%s", row + startRow + 1, col + startCol + 1, c2);
+				mvaddch(row + startRow, col + startCol, ACS_RTEE);
+				//char c2[] = SHADE_MEDIUM;
+				//mvprintw(row + startRow + 1, col + startCol + 1, "%s", c2);
 			} else if (col == 0) {
-				char c[] = BOX_LINE_VERTICAL_D;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+				mvaddch(row + startRow, col + startCol, ACS_VLINE);
 			} else if (col == borderCols - 1) {
-				char c[] = BOX_LINE_VERTICAL;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
-				char c2[] = SHADE_MEDIUM;
-				printf("\033[%i;%iH%s", row + startRow + 1, col + startCol + 1, c2);
+				mvaddch(row + startRow, col + startCol, ACS_VLINE);
+				//char c2[] = SHADE_MEDIUM;
+				//mvprintw(row + startRow + 1, col + startCol + 1, "%s", c2);
 			} else if (row == borderRows - 3) {
-				char c[] = BOX_LINE_HORIZONTAL;
-				printf("\033[%i;%iH%s", row + startRow, col + startCol, c);
+				mvaddch(row + startRow, col + startCol, ACS_HLINE);
 			}
 	
 }
@@ -529,29 +438,46 @@ void printMenu(char **menu, int lo, int fo, int windowRows, int windowCols) {
 	// Inserting menu in to terminal window
 	for (row = 0; row < menuRows; ++row) {
 
-		// highlighting current selection text
-		printf( (row == lo - 1) ? KMAG_BOLD : KNRM KCYN );
-
 		// Printing selection marker if on selected row, and removing any previous
 		// marker if not.
 		if (row == lo - 1) {
-			char c[] = POINTER_RIGHT;
-			printf("\033[%i;%iH%s", row + startRow, startCol - 2, c);
-		} else
-			printf("\033[%i;%iH%c", row + startRow, startCol - 2, SPACE);
-
-		// printing menu text
-		printf("\033[%i;%iH%s", row + startRow, startCol, menu[row]);
+			if (has_colors())
+				attron(COLOR_PAIR(2));
+			attron(A_BOLD);
+			mvaddch(row + startRow, startCol - 2, ACS_RARROW);
+			mvaddstr(row + startRow, startCol, menu[row]);
+			attroff(A_BOLD);
+			if (has_colors())
+				attron(COLOR_PAIR(1));
+		} else {
+			mvaddch(row + startRow, startCol - 2, SPACE);
+			mvaddstr(row + startRow, startCol, menu[row]);
+		}
 
 		// printing menu foot options (select/exit)
 		if (row == menuRows - 1) {
 			int sRow = row + startRow + 6;
 			int sCol = (windowCols / 2) - ((menuCols + 8 > 25 ? menuCols + 8 : 25) / 2) + 1;
 			int eCol = (windowCols / 2) + ((menuCols + 8 > 25 ? menuCols + 8 : 25) / 2) - 8;
-			printf( (fo == 1) ? KMAG_BOLD : KNRM KCYN );
-			printf("\033[%i;%iH%s", sRow, sCol, "< select >");
-			printf( (fo == 2) ? KMAG_BOLD : KNRM KCYN );
-			printf("\033[%i;%iH%s", sRow, eCol, "< exit >");
+			if ((fo == 1)) {
+				if (has_colors())
+					attron(COLOR_PAIR(2));
+				attron(A_BOLD);
+				mvaddstr(sRow, sCol, "< select >");
+				attroff(A_BOLD);
+				if (has_colors())
+					attron(COLOR_PAIR(1));
+				mvaddstr(sRow, eCol, "< exit >");
+			} else {
+				mvaddstr(sRow, sCol, "< select >");
+				if (has_colors())
+					attron(COLOR_PAIR(2));
+				attron(A_BOLD);
+				mvaddstr(sRow, eCol, "< exit >");
+				attroff(A_BOLD);
+				if (has_colors())
+					attron(COLOR_PAIR(1));
+			}
 		}
 	}
 }
