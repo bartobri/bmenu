@@ -89,6 +89,7 @@ int main (int argc, char *argv[]) {
 		start_color();
 		init_pair(1, COLOR_CYAN, COLOR_BLACK);
 		init_pair(2, COLOR_MAGENTA, COLOR_BLACK);
+		init_pair(3, COLOR_CYAN, COLOR_CYAN);
 		attron(COLOR_PAIR(1));
 	}
 
@@ -388,24 +389,36 @@ void decorateMenu(char **menu, char *title, int windowRows, int windowCols) {
 				mvaddch(row + startRow, col + startCol, ACS_LLCORNER);
 			} else if (row == borderRows - 1 && col == borderCols - 1) {
 				mvaddch(row + startRow, col + startCol, ACS_LRCORNER);
-				//char c2[] = SHADE_MEDIUM;
-				//mvprintw(row + startRow + 1, col + startCol + 1, "%s", c2);
+				if (has_colors()) {
+					attron(COLOR_PAIR(3));
+					mvaddch(row + startRow + 1, col + startCol + 1, ' ');
+					attron(COLOR_PAIR(1));
+				}
 			} else if (row == borderRows - 1) {
 				mvaddch(row + startRow, col + startCol, ACS_HLINE);
-				//char c2[] = SHADE_MEDIUM;
-				//mvprintw(row + startRow + 1, col + startCol + 1, "%s", c2);
+				if (has_colors()) {
+					attron(COLOR_PAIR(3));
+					mvaddch(row + startRow + 1, col + startCol + 1, ' ');
+					attron(COLOR_PAIR(1));
+				}
 			} else if (col == 0 && row == borderRows - 3) {
 				mvaddch(row + startRow, col + startCol, ACS_LTEE);
 			} else if (col == borderCols - 1 && row == borderRows - 3) {
 				mvaddch(row + startRow, col + startCol, ACS_RTEE);
-				//char c2[] = SHADE_MEDIUM;
-				//mvprintw(row + startRow + 1, col + startCol + 1, "%s", c2);
+				if (has_colors()) {
+					attron(COLOR_PAIR(3));
+					mvaddch(row + startRow + 1, col + startCol + 1, ' ');
+					attron(COLOR_PAIR(1));
+				}
 			} else if (col == 0) {
 				mvaddch(row + startRow, col + startCol, ACS_VLINE);
 			} else if (col == borderCols - 1) {
 				mvaddch(row + startRow, col + startCol, ACS_VLINE);
-				//char c2[] = SHADE_MEDIUM;
-				//mvprintw(row + startRow + 1, col + startCol + 1, "%s", c2);
+				if (has_colors()) {
+					attron(COLOR_PAIR(3));
+					mvaddch(row + startRow + 1, col + startCol + 1, ' ');
+					attron(COLOR_PAIR(1));
+				}
 			} else if (row == borderRows - 3) {
 				mvaddch(row + startRow, col + startCol, ACS_HLINE);
 			}
