@@ -300,8 +300,8 @@ void windowHeader(int windowCols) {
 	mvprintw(textRow, 1, "%s", "B-MENU v" VERSION);
 	attroff(A_BOLD);
 
-	for (col = 0; col < windowCols; ++col)
-		mvaddch(barRow, col, ACS_HLINE);
+	move(1,0);
+	hline(ACS_HLINE, windowCols);
 }
 
 /****************************************************
