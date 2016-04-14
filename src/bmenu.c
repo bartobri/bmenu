@@ -23,9 +23,9 @@
 
 #define MAX_MENU_OPTIONS     10
 
-#define SPACE                ' '
-#define NEWLINE              '\n'
-#define ENTER                '\n'
+#define SPACE                32
+#define NEWLINE              10
+#define ENTER                10
 
 // Function prototypes
 int loadMenuConfig(char **, char **, char *);
