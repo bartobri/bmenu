@@ -25,6 +25,19 @@ or (at your option) any later version.  See [COPYING](COPYING) for more details.
 
 Installation
 ------------
+First, make sure you have the ncurses library installed:
+```
+ls /usr/include | grep ncurses.h
+```
+If the ncurses.h header file is not present, you may need to install the library. On Ubuntu, type:
+```
+sudo apt-get update
+sudo apt-get install ncurses-dev
+```
+If you are using a different flavor of linux, search your available packages for "ncurses" and install
+it.
+
+After ensuring ncurses is installed:
 ```
 git clone https://github.com/bartobri/bmenu.git
 cd ./bmenu/src
