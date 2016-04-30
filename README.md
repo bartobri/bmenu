@@ -87,7 +87,7 @@ if [[ "$(tty)" == '/dev/tty1' ]]; then
 fi
 ```
 
-If you do this, it is best to unclude a menu option to launch a shell. Add the following to your menu
+If you do this, it is best to include a menu option to launch a shell. Add the following to your menu
 options file:
 
 ```
