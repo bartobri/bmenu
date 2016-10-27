@@ -1,5 +1,5 @@
 // Copyright (c) 2016 Brian Barto
-// 
+//
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
 // Software Foundation; either version 3 of the License, or (at your option)
@@ -110,32 +110,22 @@ int main (int argc, char *argv[]) {
 		// Check input
 		switch(input) {
 			case KEY_UP:
+			case 107: // 107 == k
 				if (menuListOption > 1)
 					--menuListOption;
 				break;
 			case KEY_DOWN:
+			case 106: // 106 == j
 				if (menuListOption < menuRows)
 					++menuListOption;
 				break;
 			case KEY_RIGHT:
+			case 108: // 108 == l
 				menuFootOption = 2;
 				break;
 			case KEY_LEFT:
-				menuFootOption = 1;
-				break;
-			case 106: // 106 == j
-				if (menuListOption < menuRows)
-				    ++menuListOption;
-				break;
-			case 107: // 107 == k
-				if (menuListOption > 1)
-				    --menuListOption;
-				break;
 			case 104: // 104 == h
 				menuFootOption = 1;
-				break;
-			case 108: // 108 == l
-				menuFootOption = 2;
 				break;
 		}
 
@@ -277,7 +267,7 @@ void createConfig(char *menuDefaultPath) {
 	// Return if we can't open the file. loadMenuConfig will
 	// ultimately return an error code to main which will
 	// terminate the program with an error message.
-	if (menu == NULL) 
+	if (menu == NULL)
 		return;
 
 	fprintf(menu, "Clear Screen:/bin/clear\n");
@@ -422,7 +412,6 @@ void decorateMenu(char **menu, char *title, int windowRows, int windowCols) {
 			} else if (row == borderRows - 3) {
 				mvaddch(row + startRow, col + startCol, ACS_HLINE);
 			}
-	
 }
 
 /****************************************************
@@ -430,8 +419,8 @@ void decorateMenu(char **menu, char *title, int windowRows, int windowCols) {
  *
  * Prints the menu options list and the select/exit
  * options. Also highlights the current selected
- * options. 
- * 
+ * options.
+ *
  * Args:
  * char **menu - array of pointers to menu strings
  * int lo - List Option (currently selected)
@@ -472,7 +461,7 @@ void printMenu(char **menu, int lo, int fo, int windowRows, int windowCols) {
 			int sRow = row + startRow + 6;
 			int sCol = (windowCols / 2) - ((menuCols + 8 > 25 ? menuCols + 8 : 25) / 2) + 1;
 			int eCol = (windowCols / 2) + ((menuCols + 8 > 25 ? menuCols + 8 : 25) / 2) - 8;
-			if ((fo == 1)) {
+			if (fo == 1) {
 				if (has_colors())
 					attron(COLOR_PAIR(2));
 				attron(A_BOLD);
@@ -555,6 +544,6 @@ int getMenuCols(char **menu) {
  *************************************************/
 int fileExists(char *filename)
 {
-	struct stat buffer;   
-	return (stat (filename, &buffer) == 0);
+	struct stat buffer;
+	return (stat(filename, &buffer) == 0);
 }
