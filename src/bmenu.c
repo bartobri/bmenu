@@ -280,8 +280,8 @@ void createConfig(char *menuDefaultPath) {
 	if (menu == NULL) 
 		return;
 
-	fprintf(menu, "Clear Screen:/usr/bin/clear\n");
-	fprintf(menu, "Dir Listing:/usr/bin/ls -l");
+	fprintf(menu, "Clear Screen:/bin/clear\n");
+	fprintf(menu, "Dir Listing:/bin/ls -l");
 	fclose(menu);
 }
 
