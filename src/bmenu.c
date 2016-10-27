@@ -271,7 +271,7 @@ void createConfig(char *menuDefaultPath) {
 		return;
 
 	fprintf(menu, "Clear Screen:/usr/bin/clear\n");
-	fprintf(menu, "Dir Listing:/usr/bin/ls -l");
+	fprintf(menu, "Dir Listing:`which ls` -l");
 	fclose(menu);
 }
 
