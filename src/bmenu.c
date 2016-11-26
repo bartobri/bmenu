@@ -16,7 +16,7 @@
 #include <unistd.h>          // execl(), getopt()
 #include <stdbool.h>         // bool, true, false
 
-#define VERSION              "0.1.0"
+#define VERSION              "0.1.1"
 
 #define MENU_TITLE           "Select Option"
 #define MENU_CONFIG          ".bmenu"
