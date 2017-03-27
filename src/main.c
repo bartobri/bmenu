@@ -6,20 +6,18 @@
 // any later version.  See COPYING for more details.
 
 #include <stdio.h>
-// #define NCURSES_WIDECHAR 1
 #include <ncurses.h>
 #include <string.h>
-#include <ctype.h>           // isspace()
-#include <stdlib.h>          // getenv()
+#include <stdlib.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h>          // execl(), getopt()
-#include <stdbool.h>         // bool, true, false
+#include <stdbool.h>
+
+#include "config.h"
 
 #define VERSION              "0.1.1"
 
 #define MENU_TITLE           "Select Option"
-#define MENU_CONFIG          ".bmenu"
 
 #define MAX_MENU_OPTIONS     10
 
@@ -28,14 +26,11 @@
 #define ENTER                10
 
 // Function prototypes
-int loadMenuConfig(char **, char **, char *);
 void windowHeader(int);
 void decorateMenu(char **, char *, int, int);
 void printMenu(char **, int, int, int, int);
 int getMenuRows(char **);
 int getMenuCols(char **);
-void createConfig(char *);
-int fileExists(char *);
 
 /***************************************************
  * Main function
@@ -44,7 +39,7 @@ int fileExists(char *);
  * more info.
  ***************************************************/
 int main (int argc, char *argv[]) {
-	int c, row, col, windowRows, windowCols;
+	int c, row, windowRows, windowCols;
 	char *menu[MAX_MENU_OPTIONS]               = {0};
 	char *command[MAX_MENU_OPTIONS]            = {0};
 	char *menuTitle                            = MENU_TITLE;
@@ -63,7 +58,7 @@ int main (int argc, char *argv[]) {
 	}
 
 	// Getting menu config
-	int result = loadMenuConfig(menu, command, configFile);
+	int result = config_load(menu, command, configFile);
 	if (result == 1) {
 		fprintf(stderr, "Please set HOME environment variable.\n");
 		return result;
@@ -152,129 +147,6 @@ int main (int argc, char *argv[]) {
 	return 0;
 }
 
-/******************************************************
- * loadMenuConfig()
- *
- * Loading the menu config file. Return a non-zero
- * result if anything goes wrong.
- *
- * Args:
- * char **menu - array of pointers to menu strings
- * char **command - array of pointers to command strings
- * char *config - Config file path
- ******************************************************/
-int loadMenuConfig(char **menu, char **command, char *config) {
-	char *menuConfigPath;
-
-	// Lets get the config file path. If it is the same as MENU_CONFIG (i.e. default)
-	// then we need to build the full path from the $HOME env variable. Otherwise,
-	// the full path should already be provided.
-	if (strcmp(config, MENU_CONFIG) == 0) {
-
-		char *homeDir = getenv("HOME");
-
-		if (homeDir == NULL)
-			return 1;
-
-		menuConfigPath = malloc(strlen(homeDir) + strlen(config) + 2);
-
-		if (menuConfigPath == NULL)
-			return 3;
-
-		strcpy(menuConfigPath, homeDir);
-		strcat(menuConfigPath, "/");
-		strcat(menuConfigPath, config);
-
-		if (!fileExists(menuConfigPath))
-			createConfig(menuConfigPath);
-	} else {
-		menuConfigPath = malloc(strlen(config) + 1);
-
-		if (menuConfigPath == NULL)
-			return 3;
-
-		strcpy(menuConfigPath, config);
-	}
-
-	// Open file
-	FILE *menuConfig = fopen(menuConfigPath, "r");
-
-	// Free memory previously allocated for file path
-	free(menuConfigPath);
-
-	// If there was an issue opening the file, return to main()
-	if (menuConfig == NULL)
-		return 2;
-
-	// Looping over the file, reading in menu and command items
-	int l = 0;
-	char *confline = NULL;
-	size_t linelen = 0;
-	while (getline(&confline, &linelen, menuConfig) != -1) {
-
-		// Skipping empty lines
-		int i = 0;
-		while (isspace(confline[i]))
-			++i;
-		if (i == strlen(confline))
-			continue;
-
-		// Parsing confline
-		menu[l] = confline;
-		strtok(confline, ":");
-		command[l] = strtok(NULL, "\n");
-
-		// If command[l] is NULL then the line is not formatted correctly.
-		// Free menu[] and return to caller with appropriate value.
-		if (command[l] == NULL) {
-
-			// Freeing memory used for menu[]
-			int row = 0;
-			while (menu[row])
-				free(menu[row++]);
-
-			// Close the open file handle
-			fclose(menuConfig);
-
-			return 4;
-		}
-
-		l++;
-		confline = NULL;
-	}
-
-	// Need to free confline in case the last line of the config file was blank
-	// resulting in a dangling confline buffer.
-	free(confline);
-
-	// Let's close the file handle.
-	fclose(menuConfig);
-
-	return 0;
-}
-
-/*************************************************
- * createConfig()
- *
- * Creates default config file at given file path
- *
- * Args:
- * char *menuDefaultPath - file path
- *************************************************/
-void createConfig(char *menuDefaultPath) {
-	FILE *menu = fopen(menuDefaultPath, "w");
-
-	// Return if we can't open the file. loadMenuConfig will
-	// ultimately return an error code to main which will
-	// terminate the program with an error message.
-	if (menu == NULL)
-		return;
-
-	fprintf(menu, "Clear Screen:/bin/clear\n");
-	fprintf(menu, "Dir Listing:/bin/ls -l");
-	fclose(menu);
-}
-
 /****************************************************
  * windowHeader()
  *
@@ -284,10 +156,8 @@ void createConfig(char *menuDefaultPath) {
  * int windowCols - number of cols in terminal window
  ****************************************************/
 void windowHeader(int windowCols) {
-	int col, textRow = 0, barRow = 1;
-
 	attron(A_BOLD);
-	mvprintw(textRow, 1, "%s", "B-MENU v" VERSION);
+	mvprintw(0, 1, "%s", "B-MENU v" VERSION);
 	attroff(A_BOLD);
 
 	move(1,0);
@@ -532,18 +402,4 @@ int getMenuCols(char **menu) {
 	}
 
 	return longest;
-}
-
-/*************************************************
- * fileExists()
- *
- * Checks if given file path exists.
- *
- * Return:
- * int - TRUE = exists, FALSE = doesn't exist
- *************************************************/
-int fileExists(char *filename)
-{
-	struct stat buffer;
-	return (stat(filename, &buffer) == 0);
 }

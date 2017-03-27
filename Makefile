@@ -25,7 +25,7 @@ EXES = bmenu
 
 all: $(EXES)
 
-bmenu: $(OBJ)/bmenu.o | $(BIN)
+bmenu: $(OBJ)/config.o $(OBJ)/main.o | $(BIN)
 	$(CC) $(CFLAGS) -o $(BIN)/$@ $^ $(CLIBS)
 
 $(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
