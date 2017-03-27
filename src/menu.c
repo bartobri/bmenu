@@ -4,10 +4,33 @@
 
 #define SPACE 32
 
+void menu_init(void) {
+	// Start and initialize curses mode
+	initscr();
+	cbreak();
+	keypad(stdscr, TRUE);
+	noecho();
+
+	// Setting up and starting colors if terminal supports them
+	if (has_colors()) {
+		start_color();
+		init_pair(1, COLOR_CYAN, COLOR_BLACK);
+		init_pair(2, COLOR_MAGENTA, COLOR_BLACK);
+		init_pair(3, COLOR_CYAN, COLOR_CYAN);
+		attron(COLOR_PAIR(1));
+	}
+}
+
 /*
  * Prints the window header (title and crossbar).
  */
-void menu_header(int windowCols, char *version) {
+void menu_header(char *version) {
+	int windowRows, windowCols;
+	
+	(void)windowRows;
+	
+	getmaxyx(stdscr, windowRows, windowCols);
+	
 	attron(A_BOLD);
 	mvprintw(0, 1, "%s%s", "B-MENU v", version);
 	attroff(A_BOLD);
@@ -19,9 +42,12 @@ void menu_header(int windowCols, char *version) {
 /*
  * Prints the inner and outer borders for the menu.
  */
-void menu_decorate(char **menu, char *title, int windowRows, int windowCols) {
+void menu_decorate(char **menu, char *title) {
 	int borderCols, borderRows, startRow, startCol;
 	int row, col;
+	int windowRows, windowCols;
+	
+	getmaxyx(stdscr, windowRows, windowCols);
 
 	// Border size (inner)
 	borderCols = menu_cols(menu) + 8;
@@ -133,10 +159,13 @@ void menu_decorate(char **menu, char *title, int windowRows, int windowCols) {
  * options. Also highlights the current selected
  * options.
  */
-void menu_print(char **menu, int lo, int fo, int windowRows, int windowCols) {
+void menu_print(char **menu, int lo, int fo) {
 	int row, startRow, startCol;
 	int menuRows = menu_rows(menu);
 	int menuCols = menu_cols(menu);
+	int windowRows, windowCols;
+	
+	getmaxyx(stdscr, windowRows, windowCols);
 
 	// Determining starting row and column for menu
 	startCol = ((windowCols / 2) - (menuCols / 2)) > 0 ? ((windowCols / 2) - (menuCols / 2)) : 0;

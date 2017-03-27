@@ -7,26 +7,14 @@
 
 #include <stdio.h>
 #include <ncurses.h>
-#include <string.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>          // execl(), getopt()
-#include <stdbool.h>
-
+#include <unistd.h>
 #include "config.h"
 #include "menu.h"
 
 #define VERSION              "0.1.1"
 
-#define NEWLINE              10
 #define ENTER                10
-
-// Function prototypes
-void windowHeader(int);
-void decorateMenu(char **, char *, int, int);
-void printMenu(char **, int, int, int, int);
-int getMenuRows(char **);
-int getMenuCols(char **);
 
 /***************************************************
  * Main function
@@ -35,7 +23,7 @@ int getMenuCols(char **);
  * more info.
  ***************************************************/
 int main (int argc, char *argv[]) {
-	int c, row, windowRows, windowCols;
+	int c, row;
 	char *menu[MAX_MENU_OPTIONS]               = {0};
 	char *command[MAX_MENU_OPTIONS]            = {0};
 	char *menuTitle                            = MENU_TITLE;
@@ -68,30 +56,15 @@ int main (int argc, char *argv[]) {
 		fprintf(stderr, "Invalid line format detected in config file: %s.\n", configFile);
 		return result;
 	}
-
-	// Start and initialize curses mode
-	initscr();
-	cbreak();
-	keypad(stdscr, TRUE);
-	noecho();
-
-	// Setting up and starting colors if terminal supports them
-	if (has_colors()) {
-		start_color();
-		init_pair(1, COLOR_CYAN, COLOR_BLACK);
-		init_pair(2, COLOR_MAGENTA, COLOR_BLACK);
-		init_pair(3, COLOR_CYAN, COLOR_CYAN);
-		attron(COLOR_PAIR(1));
-	}
-
-	// Get terminal window size
-	getmaxyx(stdscr, windowRows, windowCols);
+	
+	// Initialize and start ncurses
+	menu_init();
 
 	// Print window header
-	menu_header(windowCols, VERSION);
+	menu_header(VERSION);
 
 	// Menu title and borders
-	menu_decorate(menu, menuTitle, windowRows, windowCols);
+	menu_decorate(menu, menuTitle);
 
 	// Menu loop
 	int menuListOption = 1, menuFootOption = 1;
@@ -121,7 +94,7 @@ int main (int argc, char *argv[]) {
 		}
 
 		// Print menu with the current selection highlighted
-		menu_print(menu, menuListOption, menuFootOption, windowRows, windowCols);
+		menu_print(menu, menuListOption, menuFootOption);
 
 		// Refresh window
 		refresh();
