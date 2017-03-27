@@ -6,14 +6,13 @@
 // any later version.  See COPYING for more details.
 
 #include <stdio.h>
-#include <ncurses.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <ncurses.h>
 #include "config.h"
 #include "menu.h"
 
 #define VERSION              "0.1.1"
-
 #define ENTER                10
 
 /***************************************************
@@ -23,11 +22,11 @@
  * more info.
  ***************************************************/
 int main (int argc, char *argv[]) {
-	int c, row;
-	char *menu[MAX_MENU_OPTIONS]               = {0};
-	char *command[MAX_MENU_OPTIONS]            = {0};
+	int c, lo = 1, fo = 1;
 	char *menuTitle                            = MENU_TITLE;
 	char *configFile                           = MENU_CONFIG;
+	char **menu;
+	char **command;
 
 	// Processing command arguments
 	while ((c = getopt(argc, argv, "t:c:")) != -1) {
@@ -42,20 +41,28 @@ int main (int argc, char *argv[]) {
 	}
 
 	// Getting menu config
-	int result = config_load(menu, command, configFile);
-	if (result == 1) {
-		fprintf(stderr, "Please set HOME environment variable.\n");
-		return result;
-	} else if (result == 2) {
-		fprintf(stderr, "Could not open config file: %s\n", configFile);
-		return result;
-	} else if (result == 3) {
-		fprintf(stderr, "Memory allocation error. Could not open config file: %s\n", configFile);
-		return result;
-	} else if (result == 4) {
-		fprintf(stderr, "Invalid line format detected in config file: %s.\n", configFile);
-		return result;
+	switch (config_load(configFile)) {
+		case 1:
+			fprintf(stderr, "Please set HOME environment variable.\n");
+			return 1;
+			break;
+		case 2:
+			fprintf(stderr, "Could not open config file: %s\n", configFile);
+			return 2;
+			break;
+		case 3:
+			fprintf(stderr, "Memory allocation error. Could not open config file: %s\n", configFile);
+			return 3;
+			break;
+		case 4:
+			fprintf(stderr, "Invalid line format detected in config file: %s.\n", configFile);
+			return 4;
+			break;
 	}
+	
+	// Get menu and command settings from the config file
+	menu = config_get_menu();
+	command = config_get_command();
 	
 	// Initialize and start ncurses
 	menu_init();
@@ -66,50 +73,45 @@ int main (int argc, char *argv[]) {
 	// Menu title and borders
 	menu_decorate(menu, menuTitle);
 
-	// Menu loop
-	int menuListOption = 1, menuFootOption = 1;
-	int input = 0;
-	int menuRows = menu_rows(menu);
-	do {
-		// Check input
-		switch(input) {
+	// Print menu with first option highlighted
+	menu_print(menu, lo, fo);
+	
+	// Input loop
+	while ((c = getch()) != ENTER) {
+		switch (c) {
 			case KEY_UP:
 			case 107: // 107 == k
-				if (menuListOption > 1)
-					--menuListOption;
+				if (lo > 1)
+					--lo;
 				break;
 			case KEY_DOWN:
 			case 106: // 106 == j
-				if (menuListOption < menuRows)
-					++menuListOption;
+				if (lo < menu_rows(menu))
+					++lo;
 				break;
 			case KEY_RIGHT:
 			case 108: // 108 == l
-				menuFootOption = 2;
+				fo = 2;
 				break;
 			case KEY_LEFT:
 			case 104: // 104 == h
-				menuFootOption = 1;
+				fo = 1;
 				break;
 		}
+		
+		// Update menu with new selection
+		menu_print(menu, lo, fo);
+	}
 
-		// Print menu with the current selection highlighted
-		menu_print(menu, menuListOption, menuFootOption);
-
-		// Refresh window
-		refresh();
-
-	} while ((input = getch()) != ENTER);
-
-	// End curses mode
-	endwin();
+	// End menu display
+	menu_cleanup();
 
 	// Execute chosen command
-	if (menuFootOption == 1)
-		execl("/bin/sh", "/bin/sh", "-c", command[menuListOption - 1], (char *) NULL);
+	if (fo == 1)
+		execl("/bin/sh", "/bin/sh", "-c", command[lo - 1], (char *) NULL);
 
 	// Freeing memory used for menu[]
-	row = 0;
+	int row = 0;
 	while (menu[row])
 		free(menu[row++]);
 

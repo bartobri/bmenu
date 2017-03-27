@@ -6,11 +6,15 @@
 #include <sys/stat.h>
 #include "config.h"
 
+static char *menu[MAX_MENU_OPTIONS]               = {0};
+static char *command[MAX_MENU_OPTIONS]            = {0};
+
+
 /*
  * Load the menu config file. Return a non-zero result if anything goes
  * wrong.
  */
-int config_load(char **menu, char **command, char *config) {
+int config_load(char *config) {
 	char *menuConfigPath;
 
 	// Lets get the config file path. If it is the same as MENU_CONFIG (i.e. default)
@@ -130,3 +134,20 @@ int config_exists(char *filename)
 	struct stat buffer;
 	return (stat(filename, &buffer) == 0);
 }
+
+/*
+ * return the menu pointer
+ */
+char **config_get_menu(void) {
+	return menu;
+}
+
+/*
+ * return the command pointer
+ */
+char **config_get_command(void) {
+	return command;
+}
+
+
+

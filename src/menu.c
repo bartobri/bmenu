@@ -1,6 +1,7 @@
 #include <ncurses.h>
 #include <string.h>
 #include "menu.h"
+#include "config.h"
 
 #define SPACE 32
 
@@ -216,6 +217,8 @@ void menu_print(char **menu, int lo, int fo) {
 			}
 		}
 	}
+	
+	refresh();
 }
 
 /*
@@ -250,4 +253,13 @@ int menu_cols(char **menu) {
 	}
 
 	return longest;
+}
+
+/*
+ * End ncurses mode
+ */
+void menu_cleanup(void) {
+
+	// End curses mode
+	endwin();
 }
