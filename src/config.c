@@ -149,5 +149,15 @@ char **config_get_command(void) {
 	return command;
 }
 
+/*
+ * 
+ */
+void config_free_all(void) {
+	int row = 0;
+
+	while (row < MAX_MENU_OPTIONS && menu[row])
+		free(menu[row++]);
+}
+
 
 

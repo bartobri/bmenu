@@ -9,5 +9,6 @@ void config_create(char *);
 int  config_exists(char *);
 char **config_get_menu(void);
 char **config_get_command(void);
+void config_free_all(void);
 
 #endif

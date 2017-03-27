@@ -110,10 +110,8 @@ int main (int argc, char *argv[]) {
 	if (fo == 1)
 		execl("/bin/sh", "/bin/sh", "-c", command[lo - 1], (char *) NULL);
 
-	// Freeing memory used for menu[]
-	int row = 0;
-	while (menu[row])
-		free(menu[row++]);
+	// Free up allocated memory used by the config module
+	config_free_all();
 
 	return 0;
 }
