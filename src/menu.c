@@ -32,6 +32,7 @@ static int  menu_exists(char *);
 static int  menu_max_cols(void);
 static void menu_print_header(char *);
 static void menu_print_border(void);
+static void menu_print_options(int, int);
 
 void menu_init(void) {
 	tio_init_terminal();
@@ -142,68 +143,14 @@ char *menu_get_config_path(void) {
 }
 
 void menu_show(char *version, int lo, int fo) {
-	int i;
-	int term_cols = tio_get_cols();
-	int term_rows = tio_get_rows();
-	int menu_cols = menu_max_cols();
-	
 	// print menu header
 	menu_print_header(version);
 
 	// print inner border
 	menu_print_border();
 	
-	/*
-	 * Menu selections
-	 */
-
-	// Menu starting position
-	int startCol = ((term_cols / 2) - (menu_cols / 2));
-	int startRow = ((term_rows / 2) - (menu_count / 2));
-	if (startCol < 0)
-		startCol = 0;
-	if (startRow < 0)
-		startRow = 0;
-
-	// Inserting menu in to terminal window
-	for (i = 0; i < menu_count; ++i) {
-
-		// Printing selection marker if on selected row, and removing any previous
-		// marker if not.
-		if (i == lo - 1) {
-			tio_set_text_highlight();
-			tio_move_cursor(i + startRow, startCol - 2);
-			printf("%c", ARROW);
-			tio_move_cursor(i + startRow, startCol);
-			printf("%s", menu[i]);
-			tio_set_text_normal();
-		} else {
-			tio_move_cursor(i + startRow, startCol - 2);
-			printf(" ");
-			tio_move_cursor(i + startRow, startCol);
-			printf("%s", menu[i]);
-		}
-
-		// printing menu foot options (select/exit)
-		if (i == menu_count - 1) {
-			int sCol = (term_cols / 2) - ((menu_cols + 8 > 25 ? menu_cols + 8 : 25) / 2) + 1;
-			int eCol = (term_cols / 2) + ((menu_cols + 8 > 25 ? menu_cols + 8 : 25) / 2) - 8;
-			if (fo == 1) {
-				tio_set_text_highlight();
-				tio_move_cursor(i + startRow + 6, sCol);
-				printf("< select >");
-				tio_set_text_normal();
-				tio_move_cursor(i + startRow + 6, eCol);
-				printf("< exit >");
-			} else {
-				tio_move_cursor(i + startRow + 6, sCol);
-				printf("< select >");
-				tio_set_text_highlight();
-				tio_move_cursor(i + startRow + 6, eCol);
-				printf("< exit >");
-			}
-		}
-	}
+	// print menu options
+	menu_print_options(lo, fo);
 }
 
 void menu_free_all(void) {
@@ -376,6 +323,61 @@ static void menu_print_border(void) {
 			} else if (i == borderRows - 3) {
 				tio_move_cursor(i + startRow, j + startCol);
 				printf("%c", HLINE);
+			}
+		}
+	}
+}
+
+static void menu_print_options(int lo, int fo) {
+	int i, startCol, startRow, sCol, eCol;
+	int term_cols = tio_get_cols();
+	int term_rows = tio_get_rows();
+	int menu_cols = menu_max_cols();
+	
+	// Menu starting position
+	startCol = ((term_cols / 2) - (menu_cols / 2));
+	startRow = ((term_rows / 2) - (menu_count / 2));
+	if (startCol < 0)
+		startCol = 0;
+	if (startRow < 0)
+		startRow = 0;
+
+	// Inserting menu in to terminal window
+	for (i = 0; i < menu_count; ++i) {
+
+		// Printing selection marker if on selected row, and removing any previous
+		// marker if not.
+		if (i == lo - 1) {
+			tio_set_text_highlight();
+			tio_move_cursor(i + startRow, startCol - 2);
+			printf("%c", ARROW);
+			tio_move_cursor(i + startRow, startCol);
+			printf("%s", menu[i]);
+			tio_set_text_normal();
+		} else {
+			tio_move_cursor(i + startRow, startCol - 2);
+			printf(" ");
+			tio_move_cursor(i + startRow, startCol);
+			printf("%s", menu[i]);
+		}
+
+		// printing menu foot options (select/exit)
+		if (i == menu_count - 1) {
+			sCol = (term_cols / 2) - ((menu_cols + 8 > 25 ? menu_cols + 8 : 25) / 2) + 1;
+			eCol = (term_cols / 2) + ((menu_cols + 8 > 25 ? menu_cols + 8 : 25) / 2) - 8;
+			if (fo == 1) {
+				tio_set_text_highlight();
+				tio_move_cursor(i + startRow + 6, sCol);
+				printf("< select >");
+				tio_set_text_normal();
+				tio_move_cursor(i + startRow + 6, eCol);
+				printf("< exit >");
+			} else {
+				tio_move_cursor(i + startRow + 6, sCol);
+				printf("< select >");
+				tio_set_text_highlight();
+				tio_move_cursor(i + startRow + 6, eCol);
+				printf("< exit >");
 			}
 		}
 	}
