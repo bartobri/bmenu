@@ -1,265 +1,177 @@
-#include <ncurses.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include "menu.h"
-#include "config.h"
+#include "tio.h"
 
-#define SPACE 32
+#define MAX_MENU_OPTIONS   10
+#define MAX_MENU_LENGTH    100
+#define MAX_COMMAND_LENGTH 1000
+
+static char *menu_title = "Select Option";
+static char *menu_config = ".bmenu";
+static char *menu[MAX_MENU_OPTIONS];
+static char *command[MAX_MENU_OPTIONS];
+static int  menu_count = 0;
+
+static void menu_create(char *);
+static int  menu_exists(char *);
 
 void menu_init(void) {
-	// Start and initialize curses mode
-	initscr();
-	cbreak();
-	keypad(stdscr, TRUE);
-	noecho();
+	tio_init_terminal();
+}
 
-	// Setting up and starting colors if terminal supports them
-	if (has_colors()) {
-		start_color();
-		init_pair(1, COLOR_CYAN, COLOR_BLACK);
-		init_pair(2, COLOR_MAGENTA, COLOR_BLACK);
-		init_pair(3, COLOR_CYAN, COLOR_CYAN);
-		attron(COLOR_PAIR(1));
+void menu_end(void) {
+	tio_restore_terminal();
+}
+
+void menu_set_title(char *title) {
+	menu_title = malloc(strlen(title) + 1);
+	strcpy(menu_title, title);
+}
+
+void menu_set_config(char *config) {
+	menu_config = malloc(strlen(config) + 1);
+	strcpy(menu_config, config);
+}
+
+/*
+ * Load the menu config file. Return a non-zero result if anything goes
+ * wrong.
+ */
+int menu_load(void) {
+	int i, j;
+	char *config = menu_config;
+	char c;
+	char *menuConfigPath;
+
+	// Lets get the config file path. If it is the same as MENU_CONFIG (i.e. default)
+	// then we need to build the full path from the $HOME env variable. Otherwise,
+	// the full path should already be provided.
+	if (*config == '/') {
+		menuConfigPath = config;
+	} else {
+
+		char *homeDir = getenv("HOME");
+
+		if (homeDir == NULL)
+			return 1;
+
+		menuConfigPath = malloc(strlen(homeDir) + strlen(config) + 2);
+
+		if (menuConfigPath == NULL)
+			return 3;
+
+		strcpy(menuConfigPath, homeDir);
+		strcat(menuConfigPath, "/");
+		strcat(menuConfigPath, config);
+
+		if (!menu_exists(menuConfigPath))
+			menu_create(menuConfigPath);
 	}
-}
 
-/*
- * Prints the window header (title and crossbar).
- */
-void menu_header(char *version) {
-	int windowRows, windowCols;
-	
-	(void)windowRows;
-	
-	getmaxyx(stdscr, windowRows, windowCols);
-	
-	attron(A_BOLD);
-	mvprintw(0, 1, "%s%s", "B-MENU v", version);
-	attroff(A_BOLD);
+	// Open file
+	FILE *menuConfig = fopen(menuConfigPath, "r");
 
-	move(1,0);
-	hline(ACS_HLINE, windowCols);
-}
+	// If there was an issue opening the file, return to main()
+	if (menuConfig == NULL)
+		return 2;
 
-/*
- * Prints the inner and outer borders for the menu.
- */
-void menu_decorate(char **menu, char *title) {
-	int borderCols, borderRows, startRow, startCol;
-	int row, col;
-	int windowRows, windowCols;
-	
-	getmaxyx(stdscr, windowRows, windowCols);
-
-	// Border size (inner)
-	borderCols = menu_cols(menu) + 8;
-	borderRows = menu_rows(menu) + 4;
-
-	// Minimum border width is 25 cols.
-	// Need at least this much for select/exit options.
-	if (borderCols < 25)
-		borderCols = 25;
-
-	// Determining starting row and column for border (inner)
-	startCol = (windowCols / 2) - (borderCols / 2);
-	startRow = (windowRows / 2) - (borderRows / 2);
-	if (startCol < 0)
-		startCol = 0;
-	if (startRow < 0)
-		startRow = 0;
-
-	// printing border (inner)
-	for (row = 0; row < borderRows; ++row)
-		for (col = 0; col < borderCols; ++col)
-			if (row == 0 && col == 0)
-				mvaddch(row + startRow, col + startCol, ACS_ULCORNER);
-			else if (row == 0 && col == borderCols - 1)
-				mvaddch(row + startRow, col + startCol, ACS_URCORNER);
-			else if (row == 0)
-				mvaddch(row + startRow, col + startCol, ACS_HLINE);
-			else if (row == borderRows - 1 && col == 0)
-				mvaddch(row + startRow, col + startCol, ACS_LLCORNER);
-			else if (row == borderRows - 1 && col == borderCols - 1)
-				mvaddch(row + startRow, col + startCol, ACS_LRCORNER);
-			else if (row == borderRows - 1)
-				mvaddch(row + startRow, col + startCol, ACS_HLINE);
-			else if (col == 0)
-				mvaddch(row + startRow, col + startCol, ACS_VLINE);
-			else if (col == borderCols - 1)
-				mvaddch(row + startRow, col + startCol, ACS_VLINE);
-
-	// Printing (inner) border title
-	attron(A_BOLD);
-	mvprintw(startRow - 1, startCol, "%s", title);
-	attroff(A_BOLD);
-
-	// Border size (outer)
-	borderCols += 4;
-	borderRows += 4;
-
-	// Determining starting row and column for border (outer)
-	startCol = ((windowCols / 2) - (borderCols / 2));
-	startRow = ((windowRows / 2) - (borderRows / 2));
-	if (startCol < 0)
-		startCol = 0;
-	if (startRow < 0)
-		startRow = 0;
-
-	// Add to the bottom of the border (outer) for select/exit options
-	borderRows += 3;
-
-	// printing border (outer)
-	for (row = 0; row < borderRows; ++row)
-		for (col = 0; col < borderCols; ++col)
-			if (row == 0 && col == 0) {
-				mvaddch(row + startRow, col + startCol, ACS_ULCORNER);
-			} else if (row == 0 && col == borderCols - 1) {
-				mvaddch(row + startRow, col + startCol, ACS_URCORNER);
-			} else if (row == 0) {
-				mvaddch(row + startRow, col + startCol, ACS_HLINE);
-			} else if (row == borderRows - 1 && col == 0) {
-				mvaddch(row + startRow, col + startCol, ACS_LLCORNER);
-			} else if (row == borderRows - 1 && col == borderCols - 1) {
-				mvaddch(row + startRow, col + startCol, ACS_LRCORNER);
-				if (has_colors()) {
-					attron(COLOR_PAIR(3));
-					mvaddch(row + startRow + 1, col + startCol + 1, ' ');
-					attron(COLOR_PAIR(1));
-				}
-			} else if (row == borderRows - 1) {
-				mvaddch(row + startRow, col + startCol, ACS_HLINE);
-				if (has_colors()) {
-					attron(COLOR_PAIR(3));
-					mvaddch(row + startRow + 1, col + startCol + 1, ' ');
-					attron(COLOR_PAIR(1));
-				}
-			} else if (col == 0 && row == borderRows - 3) {
-				mvaddch(row + startRow, col + startCol, ACS_LTEE);
-			} else if (col == borderCols - 1 && row == borderRows - 3) {
-				mvaddch(row + startRow, col + startCol, ACS_RTEE);
-				if (has_colors()) {
-					attron(COLOR_PAIR(3));
-					mvaddch(row + startRow + 1, col + startCol + 1, ' ');
-					attron(COLOR_PAIR(1));
-				}
-			} else if (col == 0) {
-				mvaddch(row + startRow, col + startCol, ACS_VLINE);
-			} else if (col == borderCols - 1) {
-				mvaddch(row + startRow, col + startCol, ACS_VLINE);
-				if (has_colors()) {
-					attron(COLOR_PAIR(3));
-					mvaddch(row + startRow + 1, col + startCol + 1, ' ');
-					attron(COLOR_PAIR(1));
-				}
-			} else if (row == borderRows - 3) {
-				mvaddch(row + startRow, col + startCol, ACS_HLINE);
-			}
-}
-
-/*
- * Prints the menu options list and the select/exit
- * options. Also highlights the current selected
- * options.
- */
-void menu_print(char **menu, int lo, int fo) {
-	int row, startRow, startCol;
-	int menuRows = menu_rows(menu);
-	int menuCols = menu_cols(menu);
-	int windowRows, windowCols;
-	
-	getmaxyx(stdscr, windowRows, windowCols);
-
-	// Determining starting row and column for menu
-	startCol = ((windowCols / 2) - (menuCols / 2)) > 0 ? ((windowCols / 2) - (menuCols / 2)) : 0;
-	startRow = ((windowRows / 2) - (menuRows / 2)) > 0 ? ((windowRows / 2) - (menuRows / 2)) : 0;
-
-	// Inserting menu in to terminal window
-	for (row = 0; row < menuRows; ++row) {
-
-		// Printing selection marker if on selected row, and removing any previous
-		// marker if not.
-		if (row == lo - 1) {
-			if (has_colors())
-				attron(COLOR_PAIR(2));
-			attron(A_BOLD);
-			mvaddch(row + startRow, startCol - 2, ACS_RARROW);
-			mvaddstr(row + startRow, startCol, menu[row]);
-			attroff(A_BOLD);
-			if (has_colors())
-				attron(COLOR_PAIR(1));
-		} else {
-			mvaddch(row + startRow, startCol - 2, SPACE);
-			mvaddstr(row + startRow, startCol, menu[row]);
+	// Loop over config file and store menu items
+	for (i = 0; i < MAX_MENU_OPTIONS; ++i) {
+		
+		// Allocate menumemory
+		menu[i] = malloc(MAX_MENU_LENGTH);
+		memset(menu[i], 0, MAX_MENU_LENGTH);
+		
+		// Allocate command memory
+		command[i] = malloc(MAX_COMMAND_LENGTH);
+		memset(command[i], 0, MAX_COMMAND_LENGTH);
+		
+		// Getting menu text
+		for (j = 0; (c = fgetc(menuConfig)) != EOF && c != ':' && c != '\n'; ++j) {
+			menu[i][j] = c;
 		}
-
-		// printing menu foot options (select/exit)
-		if (row == menuRows - 1) {
-			int sRow = row + startRow + 6;
-			int sCol = (windowCols / 2) - ((menuCols + 8 > 25 ? menuCols + 8 : 25) / 2) + 1;
-			int eCol = (windowCols / 2) + ((menuCols + 8 > 25 ? menuCols + 8 : 25) / 2) - 8;
-			if (fo == 1) {
-				if (has_colors())
-					attron(COLOR_PAIR(2));
-				attron(A_BOLD);
-				mvaddstr(sRow, sCol, "< select >");
-				attroff(A_BOLD);
-				if (has_colors())
-					attron(COLOR_PAIR(1));
-				mvaddstr(sRow, eCol, "< exit >");
-			} else {
-				mvaddstr(sRow, sCol, "< select >");
-				if (has_colors())
-					attron(COLOR_PAIR(2));
-				attron(A_BOLD);
-				mvaddstr(sRow, eCol, "< exit >");
-				attroff(A_BOLD);
-				if (has_colors())
-					attron(COLOR_PAIR(1));
-			}
+		if (c == '\n') {
+			free(menu[i]);
+			free(command[i]);
+			--i;
+			continue;
+		}
+		if (c == EOF) {
+			break;
+		}
+		
+		// Getting menu command
+		for (j = 0; (c = fgetc(menuConfig)) != EOF && c != '\n'; ++j) {
+			command[i][j] = c;
+		}
+		if (c == EOF) {
+			break;
 		}
 	}
 	
-	refresh();
+	// Keep track of menu count
+	menu_count = i;
+
+	return 0;
 }
 
-/*
- * Gets the number of menu options (i.e. rows)
- * from the global menu[] array. This defines
- * the height of the menu, and is needed for
- * centering and drawing borders.
- */
-int menu_rows(char **menu) {
-	int rows;
-
-	for (rows = 0; rows < MAX_MENU_OPTIONS && *menu[rows] != 0; ++rows)
-		;
-
-	return rows;
+int menu_get_count(void) {
+	return menu_count;
 }
 
-/*
- * Gets the number of characters (i.e. cols) in
- * the longest menu option from the global menu[]
- * array. This defines the width of the menu, and
- * is needed for centering and drawing borders.
- */
-int menu_cols(char **menu) {
-	int rows, cols;
-	int longest = 0;
+char *menu_get_config_path(void) {
+	return menu_config;
+}
 
-	for (rows = 0; menu[rows] && rows < MAX_MENU_OPTIONS; ++rows) {
-		cols = strlen(menu[rows]);
-		if (longest < cols)
-			longest = cols;
+void menu_show(char *version) {
+	int i;
+	int max_cols = tio_get_cols();
+	
+	tio_move_cursor(1, 2);
+	
+	tio_set_text_normal();
+	tio_set_text_bold();
+	printf("B-MENU v%s", version);
+	tio_set_text_normal();
+	
+	tio_move_cursor(2, 1);
+	
+	for (i = 0; i < max_cols; ++i) {
+		printf("=");
 	}
-
-	return longest;
 }
 
-/*
- * End ncurses mode
- */
-void menu_cleanup(void) {
+void menu_free_all(void) {
+	int i;
 
-	// End curses mode
-	endwin();
+	for (i = 0; i <= menu_count; ++i) {
+		free(menu[i]);
+		free(command[i]);
+	}
+}
+
+///////////////////
+// STATIC FUNCTIONS
+///////////////////
+
+static void menu_create(char *path) {
+	FILE *menu = fopen(path, "w");
+
+	// Return if we can't open the file. menu_load() will
+	// ultimately return an error code to main which will
+	// terminate the program with an error message.
+	if (menu == NULL)
+		return;
+
+	fprintf(menu, "Clear Screen:/bin/clear\n");
+	fprintf(menu, "Dir Listing:/bin/ls -l");
+	fclose(menu);
+}
+
+static int menu_exists(char *path) {
+	struct stat buffer;
+	return (stat(path, &buffer) == 0);
 }

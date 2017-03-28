@@ -6,14 +6,20 @@
 // any later version.  See COPYING for more details.
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <ncurses.h>
-#include "config.h"
 #include "menu.h"
 
 #define VERSION              "0.1.1"
-#define ENTER                10
+
+#define KEY_ENTER   10          /* enter key */
+#define KEY_DOWN    0402        /* down-arrow key */                                                          
+#define KEY_UP      0403        /* up-arrow key */                                                            
+#define KEY_LEFT    0404        /* left-arrow key */                                                          
+#define KEY_RIGHT   0405        /* right-arrow key */
+#define KEY_H       104         /* h key */
+#define KEY_J       106         /* j key */
+#define KEY_K       107         /* k key */
+#define KEY_L       108         /* l key */
 
 /***************************************************
  * Main function
@@ -23,95 +29,90 @@
  ***************************************************/
 int main (int argc, char *argv[]) {
 	int c, lo = 1, fo = 1;
-	char *menuTitle                            = MENU_TITLE;
-	char *configFile                           = MENU_CONFIG;
-	char **menu;
-	char **command;
 
 	// Processing command arguments
 	while ((c = getopt(argc, argv, "t:c:")) != -1) {
 		switch (c) {
 			case 't':
-				menuTitle = optarg;
+				menu_set_title(optarg);
 				break;
 			case 'c':
-				configFile = optarg;
+				menu_set_config(optarg);
 				break;
 		}
 	}
 
 	// Getting menu config
-	switch (config_load(configFile)) {
+	switch (menu_load()) {
 		case 1:
 			fprintf(stderr, "Please set HOME environment variable.\n");
 			return 1;
 			break;
 		case 2:
-			fprintf(stderr, "Could not open config file: %s\n", configFile);
+			fprintf(stderr, "Could not open config file: %s\n", menu_get_config_path());
 			return 2;
 			break;
 		case 3:
-			fprintf(stderr, "Memory allocation error. Could not open config file: %s\n", configFile);
+			fprintf(stderr, "Memory allocation error. Could not open config file: %s\n", menu_get_config_path());
 			return 3;
 			break;
 		case 4:
-			fprintf(stderr, "Invalid line format detected in config file: %s.\n", configFile);
+			fprintf(stderr, "Invalid line format detected in config file: %s.\n", menu_get_config_path());
 			return 4;
 			break;
 	}
-	
-	// Get menu and command settings from the config file
-	menu = config_get_menu();
-	command = config_get_command();
 	
 	// Initialize and start ncurses
 	menu_init();
 
 	// Print window header
-	menu_header(VERSION);
+	//menu_header(VERSION);
 
 	// Menu title and borders
-	menu_decorate(menu, menuTitle);
+	//menu_decorate(menu, menuTitle);
 
 	// Print menu with first option highlighted
-	menu_print(menu, lo, fo);
+	//menu_print(menu, lo, fo);
+	
+	menu_show(VERSION);
 	
 	// Input loop
-	while ((c = getch()) != ENTER) {
+	while ((c = getchar()) != KEY_ENTER) {
 		switch (c) {
 			case KEY_UP:
-			case 107: // 107 == k
+			case KEY_K:
 				if (lo > 1)
 					--lo;
 				break;
 			case KEY_DOWN:
-			case 106: // 106 == j
-				if (lo < menu_rows(menu))
+			case KEY_J:
+				if (lo < menu_get_count())
 					++lo;
 				break;
 			case KEY_RIGHT:
-			case 108: // 108 == l
+			case KEY_L:
 				fo = 2;
 				break;
 			case KEY_LEFT:
-			case 104: // 104 == h
+			case KEY_H:
 				fo = 1;
 				break;
 		}
 		
 		// Update menu with new selection
-		menu_print(menu, lo, fo);
+		//menu_print(menu, lo, fo);
+		menu_show(VERSION);
 	}
 
 	// End menu display
-	menu_cleanup();
+	menu_end();
 
 	// Execute chosen command
-	if (fo == 1)
-		execl("/bin/sh", "/bin/sh", "-c", command[lo - 1], (char *) NULL);
+	//if (fo == 1)
+	//	execl("/bin/sh", "/bin/sh", "-c", command[lo - 1], (char *) NULL);
 
 	// Free up allocated memory used by the config module
-	config_free_all();
+	menu_free_all();
 
 	return 0;
 }
