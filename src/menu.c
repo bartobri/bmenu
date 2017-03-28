@@ -142,6 +142,7 @@ void menu_show(char *version, int lo, int fo) {
 	int i, j;
 	int term_cols = tio_get_cols();
 	int term_rows = tio_get_rows();
+	int menu_cols = menu_max_cols();
 	
 	/*
 	 * Header
@@ -164,7 +165,7 @@ void menu_show(char *version, int lo, int fo) {
 	 */
 
 	// Inner border size
-	int borderCols = menu_max_cols() + 8;
+	int borderCols = menu_cols + 8;
 	int borderRows = menu_count + 4;
 	if (borderCols < 25)
 		borderCols = 25;
@@ -276,7 +277,7 @@ void menu_show(char *version, int lo, int fo) {
 	 */
 
 	// Menu starting position
-	startCol = ((term_cols / 2) - (menu_max_cols() / 2));
+	startCol = ((term_cols / 2) - (menu_cols / 2));
 	startRow = ((term_rows / 2) - (menu_count / 2));
 	if (startCol < 0)
 		startCol = 0;
@@ -303,32 +304,24 @@ void menu_show(char *version, int lo, int fo) {
 		}
 
 		// printing menu foot options (select/exit)
-		/*
-		if (row == menuRows - 1) {
-			int sRow = row + startRow + 6;
-			int sCol = (windowCols / 2) - ((menuCols + 8 > 25 ? menuCols + 8 : 25) / 2) + 1;
-			int eCol = (windowCols / 2) + ((menuCols + 8 > 25 ? menuCols + 8 : 25) / 2) - 8;
+		if (i == menu_count - 1) {
+			int sCol = (term_cols / 2) - ((menu_cols + 8 > 25 ? menu_cols + 8 : 25) / 2) + 1;
+			int eCol = (term_cols / 2) + ((menu_cols + 8 > 25 ? menu_cols + 8 : 25) / 2) - 8;
 			if (fo == 1) {
-				if (has_colors())
-					attron(COLOR_PAIR(2));
-				attron(A_BOLD);
-				mvaddstr(sRow, sCol, "< select >");
-				attroff(A_BOLD);
-				if (has_colors())
-					attron(COLOR_PAIR(1));
-				mvaddstr(sRow, eCol, "< exit >");
+				tio_set_text_highlight();
+				tio_move_cursor(i + startRow + 6, sCol);
+				printf("< select >");
+				tio_set_text_normal();
+				tio_move_cursor(i + startRow + 6, eCol);
+				printf("< exit >");
 			} else {
-				mvaddstr(sRow, sCol, "< select >");
-				if (has_colors())
-					attron(COLOR_PAIR(2));
-				attron(A_BOLD);
-				mvaddstr(sRow, eCol, "< exit >");
-				attroff(A_BOLD);
-				if (has_colors())
-					attron(COLOR_PAIR(1));
+				tio_move_cursor(i + startRow + 6, sCol);
+				printf("< select >");
+				tio_set_text_highlight();
+				tio_move_cursor(i + startRow + 6, eCol);
+				printf("< exit >");
 			}
 		}
-		*/
 	}
 }
 
