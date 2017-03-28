@@ -62,18 +62,10 @@ int main (int argc, char *argv[]) {
 			break;
 	}
 	
-	// Initialize and start ncurses
+	// Initialize the terminal
 	menu_init();
-
-	// Print window header
-	//menu_header(VERSION);
-
-	// Menu title and borders
-	//menu_decorate(menu, menuTitle);
-
-	// Print menu with first option highlighted
-	//menu_print(menu, lo, fo);
 	
+	// Display the menu
 	menu_show(VERSION, lo, fo);
 	
 	// Input loop
@@ -100,7 +92,6 @@ int main (int argc, char *argv[]) {
 		}
 		
 		// Update menu with new selection
-		//menu_print(menu, lo, fo);
 		menu_show(VERSION, lo, fo);
 	}
 
