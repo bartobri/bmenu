@@ -31,6 +31,7 @@ static void menu_create(char *);
 static int  menu_exists(char *);
 static int  menu_max_cols(void);
 static void menu_print_header(char *);
+static void menu_print_border(void);
 
 void menu_init(void) {
 	tio_init_terminal();
@@ -141,7 +142,7 @@ char *menu_get_config_path(void) {
 }
 
 void menu_show(char *version, int lo, int fo) {
-	int i, j;
+	int i;
 	int term_cols = tio_get_cols();
 	int term_rows = tio_get_rows();
 	int menu_cols = menu_max_cols();
@@ -149,125 +150,16 @@ void menu_show(char *version, int lo, int fo) {
 	// print menu header
 	menu_print_header(version);
 
-	/*
-	 * Border
-	 */
-
-	// Inner border size
-	int borderCols = menu_cols + 8;
-	int borderRows = menu_count + 4;
-	if (borderCols < 25)
-		borderCols = 25;
-	int startCol = (term_cols / 2) - (borderCols / 2);
-	int startRow = (term_rows / 2) - (borderRows / 2);
-	if (startCol < 0)
-		startCol = 0;
-	if (startRow < 0)
-		startRow = 0;
-	
-	// Printing inner border
-	for (i = 0; i < borderRows; ++i) {
-		for (j = 0; j < borderCols; ++j) {
-			if (i == 0 && j == 0) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", ULCORNER);
-			} else if (i == 0 && j == borderCols - 1) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", URCORNER);
-			} else if (i == 0) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", HLINE);
-			} else if (i == borderRows - 1 && j == 0) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", LLCORNER);
-			} else if (i == borderRows - 1 && j == borderCols - 1) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", LRCORNER);
-			} else if (i == borderRows - 1) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", HLINE);
-			} else if (j == 0) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", VLINE);
-			} else if (j == borderCols - 1) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", VLINE);
-			}
-		}
-	}
-	
-	// Printing inner border title
-	tio_set_text_bold();
-	tio_move_cursor(startRow - 1, startCol);
-	printf("%s", menu_title);
-	tio_set_text_normal();
-	
-	// Outer border size
-	borderCols += 4;
-	borderRows += 4;
-	startCol = ((term_cols / 2) - (borderCols / 2));
-	startRow = ((term_rows / 2) - (borderRows / 2));
-	if (startCol < 0)
-		startCol = 0;
-	if (startRow < 0)
-		startRow = 0;
-	borderRows += 3;          // Extra rows for select/exit options
-	
-	// printing border (outer)
-	for (i = 0; i < borderRows; ++i) {
-		for (j = 0; j < borderCols; ++j) {
-			if (i == 0 && j == 0) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", ULCORNER);
-			} else if (i == 0 && j == borderCols - 1) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", URCORNER);
-			} else if (i == 0) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", HLINE);
-			} else if (i == borderRows - 1 && j == 0) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", LLCORNER);
-			} else if (i == borderRows - 1 && j == borderCols - 1) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", LRCORNER);
-				tio_move_cursor(i + startRow + 1, j + startCol + 1);
-				printf("%c", SHADE);
-			} else if (i == borderRows - 1) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", HLINE);
-				tio_move_cursor(i + startRow + 1, j + startCol + 1);
-				printf("%c", SHADE);
-			} else if (j == 0 && i == borderRows - 3) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", LTEE);
-			} else if (j == borderCols - 1 && i == borderRows - 3) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", RTEE);
-				tio_move_cursor(i + startRow + 1, j + startCol + 1);
-				printf("%c", SHADE);
-			} else if (j == 0) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", VLINE);
-			} else if (j == borderCols - 1) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", VLINE);
-				tio_move_cursor(i + startRow + 1, j + startCol + 1);
-				printf("%c", SHADE);
-			} else if (i == borderRows - 3) {
-				tio_move_cursor(i + startRow, j + startCol);
-				printf("%c", HLINE);
-			}
-		}
-	}
+	// print inner border
+	menu_print_border();
 	
 	/*
 	 * Menu selections
 	 */
 
 	// Menu starting position
-	startCol = ((term_cols / 2) - (menu_cols / 2));
-	startRow = ((term_rows / 2) - (menu_count / 2));
+	int startCol = ((term_cols / 2) - (menu_cols / 2));
+	int startRow = ((term_rows / 2) - (menu_count / 2));
 	if (startCol < 0)
 		startCol = 0;
 	if (startRow < 0)
@@ -371,4 +263,120 @@ static void menu_print_header(char *v) {
 	
 	for (i = 0; i < term_cols; ++i)
 		printf("%c", DHLINE);
+}
+
+static void menu_print_border(void) {
+	int i, j;
+	int borderCols, borderRows, startCol, startRow;
+	int term_cols = tio_get_cols();
+	int term_rows = tio_get_rows();
+	int menu_cols = menu_max_cols();
+	
+	// Inner border size
+	borderCols = menu_cols + 8;
+	borderRows = menu_count + 4;
+	if (borderCols < 25)
+		borderCols = 25;
+	startCol = (term_cols / 2) - (borderCols / 2);
+	startRow = (term_rows / 2) - (borderRows / 2);
+	if (startCol < 0)
+		startCol = 0;
+	if (startRow < 0)
+		startRow = 0;
+	
+	// Printing inner border
+	for (i = 0; i < borderRows; ++i) {
+		for (j = 0; j < borderCols; ++j) {
+			if (i == 0 && j == 0) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", ULCORNER);
+			} else if (i == 0 && j == borderCols - 1) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", URCORNER);
+			} else if (i == 0) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", HLINE);
+			} else if (i == borderRows - 1 && j == 0) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", LLCORNER);
+			} else if (i == borderRows - 1 && j == borderCols - 1) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", LRCORNER);
+			} else if (i == borderRows - 1) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", HLINE);
+			} else if (j == 0) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", VLINE);
+			} else if (j == borderCols - 1) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", VLINE);
+			}
+		}
+	}
+	
+	// Printing inner border title
+	tio_set_text_bold();
+	tio_move_cursor(startRow - 1, startCol);
+	printf("%s", menu_title);
+	tio_set_text_normal();
+	
+	// Outer border size
+	borderCols += 4;
+	borderRows += 4;
+	startCol = ((term_cols / 2) - (borderCols / 2));
+	startRow = ((term_rows / 2) - (borderRows / 2));
+	if (startCol < 0)
+		startCol = 0;
+	if (startRow < 0)
+		startRow = 0;
+	borderRows += 3;          // Extra rows for select/exit options
+	
+	// printing border (outer)
+	for (i = 0; i < borderRows; ++i) {
+		for (j = 0; j < borderCols; ++j) {
+			if (i == 0 && j == 0) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", ULCORNER);
+			} else if (i == 0 && j == borderCols - 1) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", URCORNER);
+			} else if (i == 0) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", HLINE);
+			} else if (i == borderRows - 1 && j == 0) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", LLCORNER);
+			} else if (i == borderRows - 1 && j == borderCols - 1) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", LRCORNER);
+				tio_move_cursor(i + startRow + 1, j + startCol + 1);
+				printf("%c", SHADE);
+			} else if (i == borderRows - 1) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", HLINE);
+				tio_move_cursor(i + startRow + 1, j + startCol + 1);
+				printf("%c", SHADE);
+			} else if (j == 0 && i == borderRows - 3) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", LTEE);
+			} else if (j == borderCols - 1 && i == borderRows - 3) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", RTEE);
+				tio_move_cursor(i + startRow + 1, j + startCol + 1);
+				printf("%c", SHADE);
+			} else if (j == 0) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", VLINE);
+			} else if (j == borderCols - 1) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", VLINE);
+				tio_move_cursor(i + startRow + 1, j + startCol + 1);
+				printf("%c", SHADE);
+			} else if (i == borderRows - 3) {
+				tio_move_cursor(i + startRow, j + startCol);
+				printf("%c", HLINE);
+			}
+		}
+	}
 }
