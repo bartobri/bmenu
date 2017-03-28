@@ -9,13 +9,14 @@
 #include <unistd.h>
 #include "menu.h"
 
-#define VERSION              "0.1.1"
+#define VERSION              "0.2.0"
 
 #define KEY_ENTER   10          /* enter key */
-#define KEY_DOWN    0402        /* down-arrow key */                                                          
-#define KEY_UP      0403        /* up-arrow key */                                                            
-#define KEY_LEFT    0404        /* left-arrow key */                                                          
-#define KEY_RIGHT   0405        /* right-arrow key */
+#define KEY_ESC     27          /* escape char indicating an arrow key */
+#define KEY_DOWN    66          /* down-arrow key */
+#define KEY_UP      65          /* up-arrow key */
+#define KEY_LEFT    68          /* left-arrow key */
+#define KEY_RIGHT   67          /* right-arrow key */
 #define KEY_H       104         /* h key */
 #define KEY_J       106         /* j key */
 #define KEY_K       107         /* k key */
@@ -23,9 +24,6 @@
 
 /***************************************************
  * Main function
- *
- * Returns non-zero value on error. Check stderr for
- * more info.
  ***************************************************/
 int main (int argc, char *argv[]) {
 	int c, lo = 1, fo = 1;
@@ -42,7 +40,7 @@ int main (int argc, char *argv[]) {
 		}
 	}
 
-	// Getting menu config
+	// Load menu
 	switch (menu_load()) {
 		case 1:
 			fprintf(stderr, "Please set HOME environment variable.\n");
@@ -70,6 +68,13 @@ int main (int argc, char *argv[]) {
 	
 	// Input loop
 	while ((c = getchar()) != KEY_ENTER) {
+		
+		// If we get an escape char, check for an arrow
+		if (c == KEY_ESC && getchar() == 91) {
+			c = getchar();
+		}
+		
+		// Evaluate key
 		switch (c) {
 			case KEY_UP:
 			case KEY_K:
