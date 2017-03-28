@@ -18,6 +18,7 @@
 #define SHADE        '#'
 #define LTEE         '+'
 #define RTEE         '+'
+#define ARROW        '>'
 
 static char *menu_title = "Select Option";
 static char *menu_config = ".bmenu";
@@ -137,7 +138,7 @@ char *menu_get_config_path(void) {
 	return menu_config;
 }
 
-void menu_show(char *version) {
+void menu_show(char *version, int lo, int fo) {
 	int i, j;
 	int term_cols = tio_get_cols();
 	int term_rows = tio_get_rows();
@@ -268,6 +269,66 @@ void menu_show(char *version) {
 				printf("%c", HLINE);
 			}
 		}
+	}
+	
+	/*
+	 * Menu selections
+	 */
+
+	// Menu starting position
+	startCol = ((term_cols / 2) - (menu_max_cols() / 2));
+	startRow = ((term_rows / 2) - (menu_count / 2));
+	if (startCol < 0)
+		startCol = 0;
+	if (startRow < 0)
+		startRow = 0;
+
+	// Inserting menu in to terminal window
+	for (i = 0; i < menu_count; ++i) {
+
+		// Printing selection marker if on selected row, and removing any previous
+		// marker if not.
+		if (i == lo - 1) {
+			tio_set_text_highlight();
+			tio_move_cursor(i + startRow, startCol - 2);
+			printf("%c", ARROW);
+			tio_move_cursor(i + startRow, startCol);
+			printf("%s", menu[i]);
+			tio_set_text_normal();
+		} else {
+			tio_move_cursor(i + startRow, startCol - 2);
+			printf(" ");
+			tio_move_cursor(i + startRow, startCol);
+			printf("%s", menu[i]);
+		}
+
+		// printing menu foot options (select/exit)
+		/*
+		if (row == menuRows - 1) {
+			int sRow = row + startRow + 6;
+			int sCol = (windowCols / 2) - ((menuCols + 8 > 25 ? menuCols + 8 : 25) / 2) + 1;
+			int eCol = (windowCols / 2) + ((menuCols + 8 > 25 ? menuCols + 8 : 25) / 2) - 8;
+			if (fo == 1) {
+				if (has_colors())
+					attron(COLOR_PAIR(2));
+				attron(A_BOLD);
+				mvaddstr(sRow, sCol, "< select >");
+				attroff(A_BOLD);
+				if (has_colors())
+					attron(COLOR_PAIR(1));
+				mvaddstr(sRow, eCol, "< exit >");
+			} else {
+				mvaddstr(sRow, sCol, "< select >");
+				if (has_colors())
+					attron(COLOR_PAIR(2));
+				attron(A_BOLD);
+				mvaddstr(sRow, eCol, "< exit >");
+				attroff(A_BOLD);
+				if (has_colors())
+					attron(COLOR_PAIR(1));
+			}
+		}
+		*/
 	}
 }
 

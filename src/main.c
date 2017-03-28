@@ -74,7 +74,7 @@ int main (int argc, char *argv[]) {
 	// Print menu with first option highlighted
 	//menu_print(menu, lo, fo);
 	
-	menu_show(VERSION);
+	menu_show(VERSION, lo, fo);
 	
 	// Input loop
 	while ((c = getchar()) != KEY_ENTER) {
@@ -101,7 +101,7 @@ int main (int argc, char *argv[]) {
 		
 		// Update menu with new selection
 		//menu_print(menu, lo, fo);
-		menu_show(VERSION);
+		menu_show(VERSION, lo, fo);
 	}
 
 	// End menu display

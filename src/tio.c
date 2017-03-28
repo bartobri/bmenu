@@ -94,6 +94,12 @@ void tio_set_text_normal(void) {
 	FOREGROUND_COLOR(foregroundColor);
 }
 
+void tio_set_text_highlight(void) {
+	CLEAR_ATTR();
+	FOREGROUND_COLOR(COLOR_MAGENTA);
+	BOLD();
+}
+
 void tio_set_text_bold(void) {
 	BOLD();
 }
