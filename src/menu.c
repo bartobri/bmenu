@@ -165,6 +165,8 @@ void menu_show(char *version) {
 	// Inner border size
 	int borderCols = menu_max_cols() + 8;
 	int borderRows = menu_count + 4;
+	if (borderCols < 25)
+		borderCols = 25;
 	int startCol = (term_cols / 2) - (borderCols / 2);
 	int startRow = (term_rows / 2) - (borderRows / 2);
 	if (startCol < 0)
