@@ -14,6 +14,7 @@
 #define LLCORNER     '+'
 #define LRCORNER     '+'
 #define HLINE        '-'
+#define DHLINE       '='
 #define VLINE        '|'
 #define SHADE        '#'
 #define LTEE         '+'
@@ -29,6 +30,7 @@ static int  menu_count = 0;
 static void menu_create(char *);
 static int  menu_exists(char *);
 static int  menu_max_cols(void);
+static void menu_print_header(char *);
 
 void menu_init(void) {
 	tio_init_terminal();
@@ -144,21 +146,8 @@ void menu_show(char *version, int lo, int fo) {
 	int term_rows = tio_get_rows();
 	int menu_cols = menu_max_cols();
 	
-	/*
-	 * Header
-	 */
-
-	tio_move_cursor(1, 2);
-	
-	tio_set_text_normal();
-	tio_set_text_bold();
-	printf("B-MENU v%s", version);
-	tio_set_text_normal();
-	
-	tio_move_cursor(2, 1);
-	
-	for (i = 0; i < term_cols; ++i)
-		printf("=");
+	// print menu header
+	menu_print_header(version);
 
 	/*
 	 * Border
@@ -365,4 +354,21 @@ static int menu_max_cols(void) {
 			l = strlen(menu[i]);
 
 	return l;
+}
+
+static void menu_print_header(char *v) {
+	int i;
+	int term_cols = tio_get_cols();
+	
+	tio_move_cursor(1, 2);
+	
+	tio_set_text_normal();
+	tio_set_text_bold();
+	printf("B-MENU v%s", v);
+	tio_set_text_normal();
+	
+	tio_move_cursor(2, 1);
+	
+	for (i = 0; i < term_cols; ++i)
+		printf("%c", DHLINE);
 }
