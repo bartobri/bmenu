@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include "menu.h"
 #include "tio.h"
@@ -151,6 +152,10 @@ void menu_show(char *version, int lo, int fo) {
 	
 	// print menu options
 	menu_print_options(lo, fo);
+}
+
+void menu_execute(int lo) {
+	execl("/bin/sh", "/bin/sh", "-c", command[lo - 1], (char *) NULL);
 }
 
 void menu_free_all(void) {

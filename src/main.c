@@ -99,8 +99,8 @@ int main (int argc, char *argv[]) {
 	menu_end();
 
 	// Execute chosen command
-	//if (fo == 1)
-	//	execl("/bin/sh", "/bin/sh", "-c", command[lo - 1], (char *) NULL);
+	if (fo == 1)
+		menu_execute(lo);
 
 	// Free up allocated memory used by the config module
 	menu_free_all();

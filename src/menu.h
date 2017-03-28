@@ -9,6 +9,7 @@ int  menu_load(void);
 int  menu_get_count(void);
 char *menu_get_config_path(void);
 void menu_show(char *, int, int);
+void menu_execute(int);
 void menu_free_all(void);
 
 #endif
