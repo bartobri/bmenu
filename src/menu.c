@@ -226,65 +226,44 @@ void menu_show(char *version) {
 			if (i == 0 && j == 0) {
 				tio_move_cursor(i + startRow, j + startCol);
 				printf("%c", ULCORNER);
-				//mvaddch(i + startRow, j + startCol, ACS_ULCORNER);
 			} else if (i == 0 && j == borderCols - 1) {
 				tio_move_cursor(i + startRow, j + startCol);
 				printf("%c", URCORNER);
-				//mvaddch(i + startRow, j + startCol, ACS_URCORNER);
 			} else if (i == 0) {
 				tio_move_cursor(i + startRow, j + startCol);
 				printf("%c", HLINE);
-				//mvaddch(i + startRow, j + startCol, ACS_HLINE);
 			} else if (i == borderRows - 1 && j == 0) {
 				tio_move_cursor(i + startRow, j + startCol);
 				printf("%c", LLCORNER);
-				//mvaddch(i + startRow, j + startCol, ACS_LLCORNER);
 			} else if (i == borderRows - 1 && j == borderCols - 1) {
 				tio_move_cursor(i + startRow, j + startCol);
 				printf("%c", LRCORNER);
-				//mvaddch(i + startRow, j + startCol, ACS_LRCORNER);
-
 				tio_move_cursor(i + startRow + 1, j + startCol + 1);
 				printf("%c", SHADE);
-				//mvaddch(i + startRow + 1, j + startCol + 1, ' ');
 			} else if (i == borderRows - 1) {
 				tio_move_cursor(i + startRow, j + startCol);
 				printf("%c", HLINE);
-				//mvaddch(i + startRow, j + startCol, ACS_HLINE);
-				
 				tio_move_cursor(i + startRow + 1, j + startCol + 1);
 				printf("%c", SHADE);
-				//mvaddch(i + startRow + 1, j + startCol + 1, ' ');
 			} else if (j == 0 && i == borderRows - 3) {
 				tio_move_cursor(i + startRow, j + startCol);
 				printf("%c", LTEE);
-				//mvaddch(i + startRow, j + startCol, ACS_LTEE);
 			} else if (j == borderCols - 1 && i == borderRows - 3) {
 				tio_move_cursor(i + startRow, j + startCol);
 				printf("%c", RTEE);
-				//mvaddch(i + startRow, j + startCol, ACS_RTEE);
-
 				tio_move_cursor(i + startRow + 1, j + startCol + 1);
 				printf("%c", SHADE);
-				//mvaddch(i + startRow + 1, j + startCol + 1, ' ');
-
 			} else if (j == 0) {
 				tio_move_cursor(i + startRow, j + startCol);
 				printf("%c", VLINE);
-				//mvaddch(i + startRow, j + startCol, ACS_VLINE);
 			} else if (j == borderCols - 1) {
 				tio_move_cursor(i + startRow, j + startCol);
 				printf("%c", VLINE);
-				//mvaddch(i + startRow, j + startCol, ACS_VLINE);
-
 				tio_move_cursor(i + startRow + 1, j + startCol + 1);
 				printf("%c", SHADE);
-				//mvaddch(i + startRow + 1, j + startCol + 1, ' ');
-
 			} else if (i == borderRows - 3) {
 				tio_move_cursor(i + startRow, j + startCol);
 				printf("%c", HLINE);
-				//mvaddch(i + startRow, j + startCol, ACS_HLINE);
 			}
 		}
 	}
