@@ -230,7 +230,7 @@ void menu_print(char **menu, int lo, int fo) {
 int menu_rows(char **menu) {
 	int rows;
 
-	for (rows = 0; menu[rows] && rows < MAX_MENU_OPTIONS; ++rows)
+	for (rows = 0; rows < MAX_MENU_OPTIONS && *menu[rows] != 0; ++rows)
 		;
 
 	return rows;

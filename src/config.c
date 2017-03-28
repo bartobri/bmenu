@@ -6,8 +6,12 @@
 #include <sys/stat.h>
 #include "config.h"
 
-static char *menu[MAX_MENU_OPTIONS]               = {0};
-static char *command[MAX_MENU_OPTIONS]            = {0};
+#define MAX_MENU_LENGTH    100
+#define MAX_COMMAND_LENGTH 1000
+
+static char *menu[MAX_MENU_OPTIONS];
+static char *command[MAX_MENU_OPTIONS];
+static int menu_count;
 
 
 /*
@@ -15,6 +19,8 @@ static char *command[MAX_MENU_OPTIONS]            = {0};
  * wrong.
  */
 int config_load(char *config) {
+	int i, j;
+	char c;
 	char *menuConfigPath;
 
 	// Lets get the config file path. If it is the same as MENU_CONFIG (i.e. default)
@@ -39,67 +45,56 @@ int config_load(char *config) {
 		if (!config_exists(menuConfigPath))
 			config_create(menuConfigPath);
 	} else {
-		menuConfigPath = malloc(strlen(config) + 1);
-
-		if (menuConfigPath == NULL)
-			return 3;
-
-		strcpy(menuConfigPath, config);
+		menuConfigPath = config;
 	}
 
 	// Open file
 	FILE *menuConfig = fopen(menuConfigPath, "r");
 
-	// Free memory previously allocated for file path
-	free(menuConfigPath);
-
 	// If there was an issue opening the file, return to main()
 	if (menuConfig == NULL)
 		return 2;
+		
+	// Free memory previously allocated for file path
+	if (strcmp(config, MENU_CONFIG) == 0)
+		free(menuConfigPath);
 
-	// Looping over the file, reading in menu and command items
-	int l = 0;
-	char *confline = NULL;
-	size_t linelen = 0;
-	while (getline(&confline, &linelen, menuConfig) != -1) {
-
-		// Skipping empty lines
-		size_t i = 0;
-		while (isspace(confline[i]))
-			++i;
-		if (i == strlen(confline))
-			continue;
-
-		// Parsing confline
-		menu[l] = confline;
-		strtok(confline, ":");
-		command[l] = strtok(NULL, "\n");
-
-		// If command[l] is NULL then the line is not formatted correctly.
-		// Free menu[] and return to caller with appropriate value.
-		if (command[l] == NULL) {
-
-			// Freeing memory used for menu[]
-			int row = 0;
-			while (menu[row])
-				free(menu[row++]);
-
-			// Close the open file handle
-			fclose(menuConfig);
-
-			return 4;
+	// Loop over config file and store menu items
+	for (i = 0; i < MAX_MENU_OPTIONS; ++i) {
+		
+		// Allocate menumemory
+		menu[i] = malloc(MAX_MENU_LENGTH);
+		memset(menu[i], 0, MAX_MENU_LENGTH);
+		
+		// Allocate command memory
+		command[i] = malloc(MAX_COMMAND_LENGTH);
+		memset(command[i], 0, MAX_COMMAND_LENGTH);
+		
+		// Getting menu text
+		for (j = 0; (c = fgetc(menuConfig)) != EOF && c != ':' && c != '\n'; ++j) {
+			menu[i][j] = c;
 		}
-
-		l++;
-		confline = NULL;
+		if (c == '\n') {
+			free(menu[i]);
+			free(command[i]);
+			--i;
+			continue;
+		}
+		if (c == EOF) {
+			break;
+		}
+		
+		// Getting menu command
+		for (j = 0; (c = fgetc(menuConfig)) != EOF && c != '\n'; ++j) {
+			command[i][j] = c;
+		}
+		if (c == EOF) {
+			break;
+		}
 	}
-
-	// Need to free confline in case the last line of the config file was blank
-	// resulting in a dangling confline buffer.
-	free(confline);
-
-	// Let's close the file handle.
-	fclose(menuConfig);
+	
+	// Keep track of menu count
+	menu_count = i;
 
 	return 0;
 }
@@ -150,13 +145,15 @@ char **config_get_command(void) {
 }
 
 /*
- * 
+ * free all allocated memory
  */
 void config_free_all(void) {
-	int row = 0;
+	int i;
 
-	while (row < MAX_MENU_OPTIONS && menu[row])
-		free(menu[row++]);
+	for (i = 0; i <= menu_count; ++i) {
+		free(menu[i]);
+		free(command[i]);
+	}
 }
 
 
