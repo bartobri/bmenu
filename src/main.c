@@ -102,6 +102,7 @@ int main (int argc, char *argv[]) {
 
 	// End menu display
 	menu_end();
+	fflush(stdout);
 
 	// Execute chosen command
 	if (fo == 1)
