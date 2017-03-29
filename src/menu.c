@@ -12,17 +12,22 @@
 #define MAX_COMMAND_LENGTH 1000
 
 // Menu Border Characters
-#define ULCORNER     "\xe2\x95\x94"
-#define URCORNER     "\xe2\x95\x97"
-#define LLCORNER     "\xe2\x95\x9A"
-#define LRCORNER     "\xe2\x95\x9D"
-#define HLINE        "\xe2\x95\x90"
-#define DHLINE       "\xe2\x95\x90"
-#define VLINE        "\xe2\x95\x91"
-#define SHADE        "\xe2\x96\x92"
-#define LTEE         "\xe2\x95\xA0"
-#define RTEE         "\xe2\x95\xA3"
-#define ARROW        "\xc2\xbb"
+#define INNER_ULCORNER     "\xe2\x94\x8C"
+#define INNER_URCORNER     "\xe2\x95\x96"
+#define INNER_LLCORNER     "\xe2\x95\x98"
+#define INNER_LRCORNER     "\xe2\x95\x9D"
+#define OUTER_ULCORNER     "\xe2\x95\x94"
+#define OUTER_URCORNER     "\xe2\x95\x95"
+#define OUTER_LLCORNER     "\xe2\x95\x99"
+#define OUTER_LRCORNER     "\xe2\x94\x98"
+#define OUTER_LTEE         "\xe2\x95\xA0"
+#define OUTER_RTEE         "\xe2\x95\xA1"
+#define HLINE              "\xe2\x94\x80"
+#define DHLINE             "\xe2\x95\x90"
+#define VLINE              "\xe2\x94\x82"
+#define DVLINE             "\xe2\x95\x91"
+#define SHADE              "\xe2\x96\x91"
+#define ARROW              "\xe2\x96\xBA"
 
 // Static Variables
 static char *menu_title = "Select Option";
@@ -288,28 +293,28 @@ static void menu_print_border(void) {
 		for (j = 0; j < borderCols; ++j) {
 			if (i == 0 && j == 0) {
 				tio_move_cursor(i + startRow, j + startCol);
-				printf("%s", ULCORNER);
+				printf("%s", INNER_ULCORNER);
 			} else if (i == 0 && j == borderCols - 1) {
 				tio_move_cursor(i + startRow, j + startCol);
-				printf("%s", URCORNER);
+				printf("%s", INNER_URCORNER);
 			} else if (i == 0) {
 				tio_move_cursor(i + startRow, j + startCol);
 				printf("%s", HLINE);
 			} else if (i == borderRows - 1 && j == 0) {
 				tio_move_cursor(i + startRow, j + startCol);
-				printf("%s", LLCORNER);
+				printf("%s", INNER_LLCORNER);
 			} else if (i == borderRows - 1 && j == borderCols - 1) {
 				tio_move_cursor(i + startRow, j + startCol);
-				printf("%s", LRCORNER);
+				printf("%s", INNER_LRCORNER);
 			} else if (i == borderRows - 1) {
 				tio_move_cursor(i + startRow, j + startCol);
-				printf("%s", HLINE);
+				printf("%s", DHLINE);
 			} else if (j == 0) {
 				tio_move_cursor(i + startRow, j + startCol);
 				printf("%s", VLINE);
 			} else if (j == borderCols - 1) {
 				tio_move_cursor(i + startRow, j + startCol);
-				printf("%s", VLINE);
+				printf("%s", DVLINE);
 			}
 		}
 	}
@@ -336,19 +341,19 @@ static void menu_print_border(void) {
 		for (j = 0; j < borderCols; ++j) {
 			if (i == 0 && j == 0) {
 				tio_move_cursor(i + startRow, j + startCol);
-				printf("%s", ULCORNER);
+				printf("%s", OUTER_ULCORNER);
 			} else if (i == 0 && j == borderCols - 1) {
 				tio_move_cursor(i + startRow, j + startCol);
-				printf("%s", URCORNER);
+				printf("%s", OUTER_URCORNER);
 			} else if (i == 0) {
 				tio_move_cursor(i + startRow, j + startCol);
-				printf("%s", HLINE);
+				printf("%s", DHLINE);
 			} else if (i == borderRows - 1 && j == 0) {
 				tio_move_cursor(i + startRow, j + startCol);
-				printf("%s", LLCORNER);
+				printf("%s", OUTER_LLCORNER);
 			} else if (i == borderRows - 1 && j == borderCols - 1) {
 				tio_move_cursor(i + startRow, j + startCol);
-				printf("%s", LRCORNER);
+				printf("%s", OUTER_LRCORNER);
 				tio_move_cursor(i + startRow + 1, j + startCol + 1);
 				printf("%s", SHADE);
 			} else if (i == borderRows - 1) {
@@ -358,15 +363,15 @@ static void menu_print_border(void) {
 				printf("%s", SHADE);
 			} else if (j == 0 && i == borderRows - 3) {
 				tio_move_cursor(i + startRow, j + startCol);
-				printf("%s", LTEE);
+				printf("%s", OUTER_LTEE);
 			} else if (j == borderCols - 1 && i == borderRows - 3) {
 				tio_move_cursor(i + startRow, j + startCol);
-				printf("%s", RTEE);
+				printf("%s", OUTER_RTEE);
 				tio_move_cursor(i + startRow + 1, j + startCol + 1);
 				printf("%s", SHADE);
 			} else if (j == 0) {
 				tio_move_cursor(i + startRow, j + startCol);
-				printf("%s", VLINE);
+				printf("%s", DVLINE);
 			} else if (j == borderCols - 1) {
 				tio_move_cursor(i + startRow, j + startCol);
 				printf("%s", VLINE);
@@ -374,7 +379,7 @@ static void menu_print_border(void) {
 				printf("%s", SHADE);
 			} else if (i == borderRows - 3) {
 				tio_move_cursor(i + startRow, j + startCol);
-				printf("%s", HLINE);
+				printf("%s", DHLINE);
 			}
 		}
 	}
