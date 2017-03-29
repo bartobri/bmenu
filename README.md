@@ -1,3 +1,5 @@
+![Version](https://img.shields.io/badge/Version-0.2.0-green.svg)
+
 B-Menu
 ======
 
@@ -10,47 +12,35 @@ B-Menu is a minimalistic general purpose terminal menu written in C. It was desi
 terminal-based login managers such as CDM. However, it can easily serve as a simple terminal menu for
 any situation where you would like to execute a command from a set of menu selections.
 
-B-Menu has zero dependencies, and it is intentionally feature-minimal. This keeps it easy to install, 
+B-Menu has zero dependencies and it is intentionally feature-minimal. This keeps it easy to install, 
 configure, and run. 
 
-Note that due to the way I use the extended ascii character set to display menu borders and shading,
-it is not portable to windows systems. (It’s not a bug, it’s a feature!)
-
-License
--------
-
-This program is free software; you can redistribute it and/or modify it under the terms of the GNU 
-General Public License as published by the Free Software Foundation; either version 3 of the License,
-or (at your option) any later version.  See [LICENSE](LICENSE) for more details.
+Note that bmenu uses ANSI/VT100 terminal escape sequences to draw the menu
+in the terminal window. Most modern terminal programs support these sequences
+so this should not be an issue for most users. If yours does not, the menu
+may not render properly in your terminal window.
 
 Installation
 ------------
-First, make sure you have the ncurses library installed:
-```
-ls /usr/include | grep ncurses.h
-```
-If the ncurses.h header file is not present, you may need to install the library. On Ubuntu, type:
-```
-sudo apt-get update
-sudo apt-get install ncurses-dev
-```
-If you are using a different flavor of linux, search your available packages for "ncurses" and install
-it.
+To install this project from source, you will need to have the tools `git`,
+`gcc`, and `make` to download and build it. Install them from your package
+manager if they are not already installed.
 
-After ensuring ncurses is installed:
+Once you have the necessary tools installed, follow these instructions:
+
 ```
 git clone https://github.com/bartobri/bmenu.git
 cd ./bmenu/src
 make
+sudo make install
 ```
 
-This will create the executable file `bmenu`. Most users will want to copy it to /usr/bin, but you can
-place it anywhere you like.
+This will build and install `bmenu` in to the /usr/local/bin directory.
 
 Configuring The Menu
 --------------------
 
-By default, b-menu looks for menu options in $HOME/.bmenu (use `-c` to override,  see below). This file
+By default, b-menu looks for menu options in $HOME/.bmenu. This file
 should consist of one menu option and one command on each line, seperated by a colon.
 
 Example:
@@ -65,7 +55,7 @@ Command Line Options
 
 Use the `-c` option to override the default menu file path:
 ```
-bmenu -c /path/to/menu/file
+bmenu -c /full/path/to/menu/file
 ```
 
 Use the `-t` option to override the default menu prompt:
@@ -93,3 +83,10 @@ options file:
 ```
 Shell:/bin/bash --login
 ```
+
+License
+-------
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU 
+General Public License as published by the Free Software Foundation; either version 3 of the License,
+or (at your option) any later version.  See [LICENSE](LICENSE) for more details.
