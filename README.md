@@ -3,7 +3,7 @@
 B-Menu
 ======
 
-![Screenshot](http://i.imgur.com/QV5Ra8V.png)
+![Screenshot](http://www.brianbarto.info/extern/images/bmenu/bmenu.png)
 
 What is B-Menu?
 ---------------
