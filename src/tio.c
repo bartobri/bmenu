@@ -89,17 +89,26 @@ int tio_get_cols(void) {
 	return w.ws_col;
 }
 
+/*
+ * Clear all text attributes and set default foreground color.
+ */
 void tio_set_text_normal(void) {
 	CLEAR_ATTR();
 	FOREGROUND_COLOR(foregroundColor);
 }
-
+\
+/*
+ * Set text to bld with alternate foreground color.
+ */
 void tio_set_text_highlight(void) {
 	CLEAR_ATTR();
 	FOREGROUND_COLOR(COLOR_MAGENTA);
 	BOLD();
 }
 
+/*
+ * Just set the text to bold.
+ */
 void tio_set_text_bold(void) {
 	BOLD();
 }

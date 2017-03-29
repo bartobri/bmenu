@@ -11,16 +11,16 @@
 
 #define VERSION              "0.2.0"
 
-#define KEY_ENTER   10          /* enter key */
-#define KEY_ESC     27          /* escape char indicating an arrow key */
-#define KEY_DOWN    66          /* down-arrow key */
-#define KEY_UP      65          /* up-arrow key */
-#define KEY_LEFT    68          /* left-arrow key */
-#define KEY_RIGHT   67          /* right-arrow key */
-#define KEY_H       104         /* h key */
-#define KEY_J       106         /* j key */
-#define KEY_K       107         /* k key */
-#define KEY_L       108         /* l key */
+#define KEY_ENTER   10          // enter key
+#define KEY_ESC     27          // escape char indicating an arrow key
+#define KEY_DOWN    66          // down-arrow key
+#define KEY_UP      65          // up-arrow key
+#define KEY_LEFT    68          // left-arrow key
+#define KEY_RIGHT   67          // right-arrow key
+#define KEY_H       104         // h key
+#define KEY_J       106         // j key
+#define KEY_K       107         // k key
+#define KEY_L       108         // l key
 
 /***************************************************
  * Main function

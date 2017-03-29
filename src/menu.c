@@ -39,19 +39,31 @@ static void menu_print_header(char *);
 static void menu_print_border(void);
 static void menu_print_options(int, int);
 
+/*
+ * Initialize and configure the terminal for output.
+ */
 void menu_init(void) {
 	tio_init_terminal();
 }
 
+/*
+ * Restore terminal settings.
+ */
 void menu_end(void) {
 	tio_restore_terminal();
 }
 
+/*
+ * Set menu title variable.
+ */
 void menu_set_title(char *title) {
 	menu_title = malloc(strlen(title) + 1);
 	strcpy(menu_title, title);
 }
 
+/*
+ * Set config file location.
+ */
 void menu_set_config(char *config) {
 	menu_config = malloc(strlen(config) + 1);
 	strcpy(menu_config, config);
@@ -67,9 +79,10 @@ int menu_load(void) {
 	char c;
 	char *menuConfigPath;
 
-	// Lets get the config file path. If it is the same as MENU_CONFIG (i.e. default)
-	// then we need to build the full path from the $HOME env variable. Otherwise,
-	// the full path should already be provided.
+	// If the menu_config variable starts with a backslash then we use it
+	// as is, assuming it is a full path. If it does not start with a
+	// backslash, then we need to build the full path from the $HOME env
+	// variable.
 	if (*config == '/') {
 		menuConfigPath = config;
 	} else {
@@ -138,15 +151,24 @@ int menu_load(void) {
 
 	return 0;
 }
-
+/*
+ * Return the number of menu items loaded by menu_load().
+ */
 int menu_get_count(void) {
 	return menu_count;
 }
 
+/*
+ * Return the menu file path used by menu_load().
+ */
 char *menu_get_config_path(void) {
 	return menu_config;
 }
 
+/*
+ * Display the menu to the user. lo and fo represent the list option and
+ * the foot option that should be highlighted.
+ */
 void menu_show(char *version, int lo, int fo) {
 	// print menu header
 	menu_print_header(version);
@@ -158,10 +180,16 @@ void menu_show(char *version, int lo, int fo) {
 	menu_print_options(lo, fo);
 }
 
+/*
+ * Execute the command at index lo.
+ */
 void menu_execute(int lo) {
 	execl("/bin/sh", "/bin/sh", "-c", command[lo - 1], (char *) NULL);
 }
 
+/*
+ * Free all allocated memory for menu and command arrays.
+ */
 void menu_free_all(void) {
 	int i;
 
@@ -171,10 +199,13 @@ void menu_free_all(void) {
 	}
 }
 
-///////////////////
+///////////////////////////////////////////////////////////////////////
 // STATIC FUNCTIONS
-///////////////////
+///////////////////////////////////////////////////////////////////////
 
+/*
+ * Create a new menu configuration file
+ */
 static void menu_create(char *path) {
 	FILE *menu = fopen(path, "w");
 
@@ -189,11 +220,17 @@ static void menu_create(char *path) {
 	fclose(menu);
 }
 
+/*
+ * Check if a menu file exists at the given path.
+ */
 static int menu_exists(char *path) {
 	struct stat buffer;
 	return (stat(path, &buffer) == 0);
 }
 
+/*
+ * Return the menu column width.
+ */
 static int menu_max_cols(void) {
 	int i, l;
 
@@ -204,6 +241,9 @@ static int menu_max_cols(void) {
 	return l;
 }
 
+/*
+ * Print menu header.
+ */
 static void menu_print_header(char *v) {
 	int i;
 	int term_cols = tio_get_cols();
@@ -221,6 +261,9 @@ static void menu_print_header(char *v) {
 		printf("%s", DHLINE);
 }
 
+/*
+ * Print menu borders.
+ */
 static void menu_print_border(void) {
 	int i, j;
 	int borderCols, borderRows, startCol, startRow;
@@ -337,6 +380,10 @@ static void menu_print_border(void) {
 	}
 }
 
+/*
+ * Print menu options with current selections highlighted as indicated
+ * by lo and fo (list option and foot option).
+ */
 static void menu_print_options(int lo, int fo) {
 	int i, startCol, startRow, sCol, eCol;
 	int term_cols = tio_get_cols();
