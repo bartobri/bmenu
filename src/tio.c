@@ -96,7 +96,7 @@ void tio_set_text_normal(void) {
 	CLEAR_ATTR();
 	FOREGROUND_COLOR(foregroundColor);
 }
-\
+
 /*
  * Set text to bld with alternate foreground color.
  */
