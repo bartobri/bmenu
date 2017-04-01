@@ -36,13 +36,13 @@ make
 sudo make install
 ```
 
+This will build and install `bmenu` in to the /usr/local/bin directory.
+
 Uninstall:
 
 ```
 sudo make uninstall
 ```
-
-This will build and install `bmenu` in to the /usr/local/bin directory.
 
 Configuring The Menu
 --------------------
