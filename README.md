@@ -31,9 +31,15 @@ Once you have the necessary tools installed, follow these instructions:
 
 ```
 git clone https://github.com/bartobri/bmenu.git
-cd ./bmenu/src
+cd ./bmenu
 make
 sudo make install
+```
+
+Uninstall:
+
+```
+sudo make uninstall
 ```
 
 This will build and install `bmenu` in to the /usr/local/bin directory.
