@@ -1,9 +1,9 @@
-// Copyright (c) 2016 Brian Barto
+// Copyright (c) 2017 Brian Barto
 //
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
 // Software Foundation; either version 3 of the License, or (at your option)
-// any later version.  See COPYING for more details.
+// any later version.  See LICENSE for more details.
 
 #include <stdio.h>
 #include <unistd.h>
