@@ -1,13 +1,9 @@
 ![Version](https://img.shields.io/badge/Version-0.2.0-green.svg)
-[![Donate](https://img.shields.io/badge/Tips-PayPal_and_Bitcoin-green.svg)](https://github.com/bartobri/tips)
 
 B-Menu
 ======
 
 ![Screenshot](http://www.brianbarto.info/extern/images/bmenu/bmenu.png)
-
-What is B-Menu?
----------------
 
 B-Menu is a minimalistic general purpose terminal menu written in C. It was designed to replace
 terminal-based login managers such as CDM. However, it can easily serve as a simple terminal menu for
@@ -21,8 +17,19 @@ in the terminal window. Most modern terminal programs support these sequences
 so this should not be an issue for most users. If yours does not, the menu
 may not render properly in your terminal window.
 
-Installation
-------------
+Table of Contents
+-----------------
+
+1. [Download and Install](#download-and-install)
+2. [Configuration](#configuration)
+3. [Usage](#usage)
+4. [Run as a Login Manager](#run-as-a-login-manager)
+5. [License](#license)
+6. [Tips](#tips)
+
+Download and Install
+--------------------
+
 To install this project from source, you will need to have the tools `git`,
 `gcc`, and `make` to download and build it. Install them from your package
 manager if they are not already installed.
@@ -44,8 +51,8 @@ Uninstall:
 sudo make uninstall
 ```
 
-Configuring The Menu
---------------------
+Configuration
+-------------
 
 By default, b-menu looks for menu options in $HOME/.bmenu. This file
 should consist of one menu option and one command on each line, seperated by a colon.
@@ -57,8 +64,8 @@ Clear Screen:/usr/bin/clear
 Dir Listing:/usr/bin/ls -l
 ```
 
-Command Line Options
---------------------
+Usage
+-----
 
 Use the `-c` option to override the default menu file path:
 ```
@@ -70,8 +77,8 @@ Use the `-t` option to override the default menu prompt:
 bmenu -t 'Choose an Option:'
 ```
 
-Set Up B-Menu as a Login Manager
---------------------------------
+Run as a Login Manager
+----------------------
 
 To run b-menu when you login, place the following code in `$HOME/.bash_profile`:
 
@@ -97,3 +104,17 @@ License
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU 
 General Public License as published by the Free Software Foundation; either version 3 of the License,
 or (at your option) any later version.  See [LICENSE](LICENSE) for more details.
+
+Tips
+----
+
+If you've found any of my open source projects helpful to the extent that
+you'd like to repay me in some way, below are a couple methods you can use to
+tip me for my work. I work on open source software full time, and I do not
+get paid for it. Any tips are greatly appreciated.
+
+#### PayPal
+Send tips to bartobrian@gmail.com or [follow this link](https://www.paypal.me/BrianBarto).
+
+#### Bitcoin
+Tip address: 19fy9CsJvN39f3dV6MJy6FfvggP5zunh5j
