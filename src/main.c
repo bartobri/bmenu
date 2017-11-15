@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include "menu.h"
 
-#define VERSION              "0.2.0"
+#define VERSION              "0.2.1"
 
 #define KEY_ENTER   10          // enter key
 #define KEY_ESC     27          // escape char indicating an arrow key
