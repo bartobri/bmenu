@@ -205,7 +205,7 @@ void menu_execute(int lo) {
 void menu_free_all(void) {
 	int i;
 
-	for (i = 0; i <= menu_count; ++i) {
+	for (i = 0; i < menu_count; ++i) {
 		free(menu[i]);
 		free(command[i]);
 	}
