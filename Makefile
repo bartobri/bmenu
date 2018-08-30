@@ -17,7 +17,6 @@ SRC_MODS=src/modules
 
 CC ?= gcc
 CFLAGS ?= -Wextra -Wall -iquote$(SRC)
-CLIBS ?= -lncurses
 
 .PHONY: all install uninstall clean
 
@@ -26,7 +25,7 @@ EXES = bmenu
 all: $(EXES)
 
 bmenu: $(OBJ)/tio.o $(OBJ)/menu.o $(OBJ)/main.o | $(BIN)
-	$(CC) $(CFLAGS) -o $(BIN)/$@ $^ $(CLIBS)
+	$(CC) $(CFLAGS) -o $(BIN)/$@ $^ 
 
 $(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
 	$(CC) $(CFLAGS) -o $@ -c $<
