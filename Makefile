@@ -41,9 +41,13 @@ clean:
 	rm -rf $(BIN)
 	rm -rf $(OBJ)
 
+build-man:
+	pandoc --from markdown --to man --standalone bmenu.1.md > bmenu.1
+
 install:
 	install -d $(DESTDIR)$(bindir)
 	cd $(BIN) && install $(EXES) $(DESTDIR)$(bindir)
+	install bmenu.1 $(DESTDIR)$(mandir)/man1
 
 uninstall:
 	for exe in $(EXES); do rm $(DESTDIR)$(bindir)/$$exe; done
