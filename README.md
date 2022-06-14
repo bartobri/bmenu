@@ -3,7 +3,7 @@
 B-Menu
 ======
 
-![Screenshot](http://www.brianbarto.info/extern/images/bmenu/bmenu.png)
+![Screenshot](https://www.brianbarto.info/static/bmenu/bmenu.png)
 
 B-Menu is a minimalistic general purpose terminal menu written in C. It was designed to replace
 terminal-based login managers such as CDM. However, it can easily serve as a simple terminal menu for
