@@ -1,5 +1,7 @@
 ![Version](https://img.shields.io/badge/Version-0.2.1-green.svg)
 
+Like this project? Consider sponsoring me: [https://github.com/sponsors/bartobri](https://github.com/sponsors/bartobri)
+
 B-Menu
 ======
 
@@ -105,7 +107,3 @@ This program is free software; you can redistribute it and/or modify it under th
 General Public License as published by the Free Software Foundation; either version 3 of the License,
 or (at your option) any later version.  See [LICENSE](LICENSE) for more details.
 
-Tips
-----
-
-[Tips are always appreciated!](https://github.com/bartobri/tips)
