@@ -27,7 +27,6 @@ Table of Contents
 3. [Usage](#usage)
 4. [Run as a Login Manager](#run-as-a-login-manager)
 5. [License](#license)
-6. [Tips](#tips)
 
 Download and Install
 --------------------
