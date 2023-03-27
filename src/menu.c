@@ -88,7 +88,7 @@ void menu_set_config(char *config) {
 int menu_load(void) {
 	int i, j;
 	char *config = menu_config;
-	char c;
+	int c;
 	char *menuConfigPath;
 
 	// If the menu_config variable starts with a backslash then we use it
